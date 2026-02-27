@@ -24,7 +24,7 @@ GO
 --   chi tiết tăng: 01/05/2011 giá trị 1.2 tỷ đã khấu hao 1.030 tỷ
 --   trong tình huống này chương trình sẽ tính theo nguyên giá chia thời gian sử dụng tài sản 
 -- =============================================
-ALTER    PROCEDURE  [dbo].[usp_B30AssetDoc_CalDepreciation3] 
+ALTER    PROCEDURE  [dbo].usp_B30AssetDoc_CalDepreciation3_26022026 
 	 @_Date AS DATE = '20280331',
 	 @_Year AS VARCHAR(24) = '2028', 
 	 @_AssetAccount AS VARCHAR(24) = '',
@@ -408,7 +408,8 @@ BEGIN
 		SET LastDayFluctuations = FirstDeprDate
 		WHERE FirstDeprDate > LastDayFluctuations
 	END
- 
+   
+    
  -- Tính phân bổ CCDC tròn tháng, tính theo pp đường thẳng và sản lượng
 	 IF (@_AssetType <> 0 AND @_M_PP_Pb_CCDC = '1')
 	 BEGIN
@@ -420,7 +421,10 @@ BEGIN
 		UPDATE #t_GtCl0
 		SET ResidualMonth = CAST(IIF( AllocateByCapacity = 0, UsefulMonth, ProductionCapacity) AS NUMERIC(18, 9)) - MonthForDepr1
 
+		--kiểm tra lại công thức tính pp khấu hao theo sản lượng đang bị sai giá trị phân bổ cho 1 mã
+		--
 		
+		SELECT Depreciation0,NetBookValue,ResidualMonth,* from #t_GtCl0     
 
 		UPDATE #t_GtCl0
 		SET Depreciation0 = CASE
@@ -430,12 +434,10 @@ BEGIN
 								WHEN ResidualMonth > 0 THEN
 									ROUND(NetBookValue / ResidualMonth, @_Round)
 							END 
-		
+      
+	  	SELECT Depreciation0,NetBookValue,ResidualMonth,* from #t_GtCl0   return 
 
-		
 
-	 
-		 
 		-- Xử lý riêng tình huống lấy số dư cuối chia thời gian sử dụng còn lại
 		-- Chỉ lấy CCDC có điều chinh hao mòn quá khứ
 		DROP TABLE IF EXISTS #_CtCl;
@@ -456,7 +458,7 @@ BEGIN
 					N'		GROUP BY AssetId, EquityId,tb.DeprMethod'  
   
 		EXECUTE sp_executesql @_cmd,N'@_ProgUsedFirstDay DATE, @_AssetType VARCHAR(24)',@_ProgUsedFirstDay,@_AssetType
-    
+      
 		IF EXISTS(SELECT * FROM #_CtCl)
 		BEGIN   
 		-- Với CCDC nào không có biến động thì tính Phân bổ tháng = NetBookValue / Số tháng
@@ -480,26 +482,28 @@ BEGIN
 			N' @_ProgUsedFirstDay DATE, @_AssetType VARCHAR(24), @_Round INT',
 				@_ProgUsedFirstDay,@_AssetType,@_Round
  
+			
+ 
 			UPDATE #t_GtCl0
 			SET Depreciation0 = ROUND((a.NetBookValue)/(a.ResidualMonth), @_Round)
 			FROM #t_GtCl0 a 
 			INNER JOIN #_CtCl b ON a.AssetId = b.AssetId AND a.EquityId = b.EquityId 
 			WHERE a.ResidualMonth > 0  
 			END  
+			 
 			DROP TABLE IF EXISTS #_CtCl
 
 	 END
  ELSE
 	BEGIN 
-		
-		
-
+ 
 		UPDATE #t_GtCl0 SET MonthForDepr1 = dbo.ufn_sys_MonthDiffTs(FirstDeprDate, LastDayFluctuations)
     
 		UPDATE #t_GtCl0 SET ResidualMonth = CAST(IIF(AllocateByCapacity = 0, UsefulMonth, ProductionCapacity) AS NUMERIC(18, 9)) - MonthForDepr1  
   
 		UPDATE #t_GtCl0 SET Depreciation0 = ROUND(NetBookValue/ResidualMonth, @_Round) WHERE ResidualMonth > 0
- 
+		
+		--select Depreciation0,* from #t_GtCl0 return 
 
 		-- MonthForDepr1 số tháng phân bổ
 		-- ResidualMonth số tháng phân bổ còn lại
@@ -508,6 +512,7 @@ BEGIN
 	 
 	END
  
+  
  -- Tình huống đặc biệt:
  -- Tài sản có biến động thời gian sử dụng trong kỳ tính toán khấu hao tháng được tính = GTCL đầu kỳ Chia Thời gian còn lại (đã cộng tăng giảm thời gian sử dụng)
  -- Chú ý: Biến động về thời gian sử dụng bất kỳ ngày nào trong tháng cũng được tính là ngày đầu của tháng tính toán.
@@ -517,78 +522,83 @@ BEGIN
 		BEGIN
 		IF (@_AssetType <> 0 AND @_M_PP_Pb_CCDC = '1') -- Phân bổ CCDC tròn tháng
 			BEGIN   
-			SET @_Cmd = N'	UPDATE #t_GtCl0   '+@_nl+
-						N'	SET NetBookValue = dk.NetBookValue,  '+@_nl+
-						N'		MonthForDepr1 = DATEDIFF(month, ctcl.FirstDeprDate, @_DocDate1),  '+@_nl+
-						N'		ResidualMonth = CAST(IIF(ctcl.AllocateByCapacity = 0, ctcl.UsefulMonth, ctcl.ProductionCapacity) AS NUMERIC(18, 9)) - DATEDIFF(month, ctcl.FirstDeprDate, @_DocDate1),   '+@_nl+
-						N'		Depreciation0 =   '+@_nl+
-						N'			CASE WHEN (CAST(IIF(ctcl.AllocateByCapacity = 0, ctcl.UsefulMonth, ctcl.ProductionCapacity) AS NUMERIC(18, 9)) - DATEDIFF(month, ctcl.FirstDeprDate, @_DocDate1)) = 0   '+@_nl+
-						N'			THEN 0 ELSE ROUND(dk.NetBookValue/(IIF(ctcl.AllocateByCapacity = 0, ctcl.UsefulMonth, ctcl.ProductionCapacity) - DATEDIFF(month, ctcl.FirstDeprDate, @_DocDate1)), @_Round) END   '+@_nl+
-						N'	FROM #t_GtCl0 ctcl   '+@_nl+
-						N'		INNER JOIN #SoThangSd SoThangSd ON ctcl.AssetId = SoThangSd.AssetId AND ctcl.EquityId = SoThangSd.EquityId  '+@_nl+
-						N'		INNER JOIN (  '+@_nl+
-						N'					SELECT AssetId, EquityId, SUM((IncOriginalCost - DeOriginalCost) - (IncDepreciation - DeDepreciation)) AS NetBookValue  '+@_nl+
-						N'						FROM dbo.vB3' + @_DataCode_Branch + N'AssetDoc  '+@_nl+
-						N'						WHERE DocDate < @_DocDate1 AND IsActive=1  '+@_nl+
-						N'						GROUP BY AssetId, EquityId) AS dk ON ctcl.AssetId = Dk.AssetId AND ctcl.EquityId = Dk.EquityId   '+@_nl+
-						N'						WHERE SoThangSd.UsefulMonthAcc <> 0 OR SoThangSd.ProductionCapacityAcc <> 0'
+				SET @_Cmd = N'	UPDATE #t_GtCl0   '+@_nl+
+							N'	SET NetBookValue = dk.NetBookValue,  '+@_nl+
+							N'		MonthForDepr1 = DATEDIFF(month, ctcl.FirstDeprDate, @_DocDate1),  '+@_nl+
+							N'		ResidualMonth = CAST(IIF(ctcl.AllocateByCapacity = 0, ctcl.UsefulMonth, ctcl.ProductionCapacity) AS NUMERIC(18, 9)) - DATEDIFF(month, ctcl.FirstDeprDate, @_DocDate1),   '+@_nl+
+							N'		Depreciation0 =   '+@_nl+
+							N'			CASE WHEN (CAST(IIF(ctcl.AllocateByCapacity = 0, ctcl.UsefulMonth, ctcl.ProductionCapacity) AS NUMERIC(18, 9)) - DATEDIFF(month, ctcl.FirstDeprDate, @_DocDate1)) = 0   '+@_nl+
+							N'			THEN 0 ELSE ROUND(dk.NetBookValue/(IIF(ctcl.AllocateByCapacity = 0, ctcl.UsefulMonth, ctcl.ProductionCapacity) - DATEDIFF(month, ctcl.FirstDeprDate, @_DocDate1)), @_Round) END   '+@_nl+
+							N'	FROM #t_GtCl0 ctcl   '+@_nl+
+							N'		INNER JOIN #SoThangSd SoThangSd ON ctcl.AssetId = SoThangSd.AssetId AND ctcl.EquityId = SoThangSd.EquityId  '+@_nl+
+							N'		INNER JOIN (  '+@_nl+
+							N'					SELECT AssetId, EquityId, SUM((IncOriginalCost - DeOriginalCost) - (IncDepreciation - DeDepreciation)) AS NetBookValue  '+@_nl+
+							N'						FROM dbo.vB3' + @_DataCode_Branch + N'AssetDoc  '+@_nl+
+							N'						WHERE DocDate < @_DocDate1 AND IsActive=1  '+@_nl+
+							N'						GROUP BY AssetId, EquityId) AS dk ON ctcl.AssetId = Dk.AssetId AND ctcl.EquityId = Dk.EquityId   '+@_nl+
+							N'						WHERE SoThangSd.UsefulMonthAcc <> 0 OR SoThangSd.ProductionCapacityAcc <> 0'
    
-			EXECUTE sp_executesql @_cmd, N'@_DocDate1 DATE, @_Round INT',@_DocDate1, @_Round
- 
+				EXECUTE sp_executesql @_cmd, N'@_DocDate1 DATE, @_Round INT',@_DocDate1, @_Round
+     
 			END
 		ELSE
 			BEGIN
-			IF EXISTS(SELECT * FROM #SoThangSd WHERE UsefulMonthAcc <> 0 OR ProductionCapacityAcc <> 0)
-			BEGIN 
-				SET @_Cmd = N'UPDATE #t_GtCl0		'+@_nl+
-							N'	SET NetBookValue = dk.NetBookValue, '+@_nl+
-							N'		MonthForDepr1 = dbo.ufn_sys_MonthDiffTs(ctcl.FirstDeprDate, DATEADD(DAY, -1, @_DocDate1)),'+@_nl+
-							N'		ResidualMonth = CAST(IIF(ctcl.AllocateByCapacity = 0, ctcl.UsefulMonth, ctcl.ProductionCapacity) AS NUMERIC(18, 9)) - dbo.ufn_sys_MonthDiffTs(ctcl.FirstDeprDate, @_DocDate1), '+@_nl+
-							N'		Depreciation0 = CASE '+@_nl+
-							N'						WHEN CAST(IIF(ctcl.AllocateByCapacity = 0, ctcl.UsefulMonth, ctcl.ProductionCapacity) AS NUMERIC(18, 9)) - dbo.ufn_sys_MonthDiffTs(ctcl.FirstDeprDate, @_DocDate1) = 0 THEN 0 '+@_nl+
-							N'						END '+@_nl+
-							N'		FROM #t_GtCl0 AS ctcl '+@_nl+
-							N'			INNER JOIN #SoThangSd AS SoThangSd ON ctcl.AssetId = SoThangSd.AssetId AND ctcl.EquityId = SoThangSd.EquityId'+@_nl+
-							N'			INNER JOIN ('+@_nl+
-							N'						SELECT AssetId, EquityId, SUM((IncOriginalCost - DeOriginalCost) - (IncDepreciation - DeDepreciation)) AS NetBookValue'+@_nl+
-							N'				--ELSE ROUND(dk.NetBookValue/(CAST(IIF(ctcl.AllocateByCapacity = 0, ctcl.UsefulMonth, ctcl.ProductionCapacity) AS NUMERIC(18, 9)) - dbo.ufn_sys_MonthDiffTs(ctcl.FirstDeprDate, @_DocDate1)), @_Round)'+@_nl+
-							N'			FROM dbo.vB3' + @_DataCode_Branch + N'AssetDoc'+@_nl+
-							N'		WHERE DocDate < @_DocDate1 AND IsActive=1'+@_nl+
-							N'		GROUP BY AssetId, EquityId) AS dk ON ctcl.AssetId = Dk.AssetId AND ctcl.EquityId = Dk.EquityId '+@_nl+
-							N'		WHERE SoThangSd.UsefulMonthAcc <> 0 OR SoThangSd.ProductionCapacityAcc <> 0'
+				IF EXISTS(SELECT * FROM #SoThangSd WHERE UsefulMonthAcc <> 0 OR ProductionCapacityAcc <> 0)
+					BEGIN 
 
-				EXECUTE sp_executesql @_cmd,N'@_DocDate1 DATE, @_Round INT',@_DocDate1, @_Round
- 
-			END
-			ELSE -- trunght thêm để làm số dư
-			BEGIN
-     
-				SET @_Cmd = N'	UPDATE #t_GtCl0  '+@_nl+
-							N'		SET NetBookValue = dk.NetBookValue,'+@_nl+
-							N'			MonthForDepr1 = dbo.ufn_sys_MonthDiffTs(ctcl.FirstDeprDate, DATEADD(DAY, -1, @_DocDate1)),'+@_nl+
-							N'			ResidualMonth = CAST(IIF(ctcl.AllocateByCapacity = 0, ctcl.UsefulMonth, ctcl.ProductionCapacity) AS NUMERIC(18, 9))'+@_nl+
-							N'			- dbo.ufn_sys_MonthDiffTs(ctcl.FirstDeprDate, @_DocDate1), '+@_nl+
-							N'			Depreciation0 = CASE '+@_nl+
-							N'							WHEN CAST(IIF(ctcl.AllocateByCapacity = 0, ctcl.UsefulMonth, ctcl.ProductionCapacity) AS NUMERIC(18, 9)) - dbo.ufn_sys_MonthDiffTs(ctcl.FirstDeprDate, @_DocDate1) = 0 THEN 0 '+@_nl+
-							N'							END '+@_nl+
-							N'			FROM #t_GtCl0 AS ctcl '+@_nl+
-							N'				INNER JOIN #SoThangSd AS SoThangSd ON ctcl.AssetId = SoThangSd.AssetId AND ctcl.EquityId = SoThangSd.EquityId'+@_nl+
-							N'				INNER JOIN ('+@_nl+
-							N'							SELECT AssetId, EquityId, SUM((IncOriginalCost - DeOriginalCost) - (IncDepreciation - DeDepreciation)) AS NetBookValue'+@_nl+
-							N'						ELSE ROUND(dk.NetBookValue/(CAST(IIF(ctcl.AllocateByCapacity = 0, ctcl.UsefulMonth, ctcl.ProductionCapacity) AS NUMERIC(18, 9)) - dbo.ufn_sys_MonthDiffTs(ctcl.FirstDeprDate, @_DocDate1)), @_Round)'+@_nl+
-							N'				FROM dbo.vB3' + @_DataCode_Branch + N'AssetDoc'+@_nl+
-							N'			WHERE DocDate < @_DocDate1 AND IsActive=1'+@_nl+
-							N'			GROUP BY AssetId, EquityId) AS dk ON ctcl.AssetId = Dk.AssetId AND ctcl.EquityId = Dk.EquityId ' 
+						SET @_Cmd = N'UPDATE #t_GtCl0		'+@_nl+
+									N'	SET NetBookValue = dk.NetBookValue, '+@_nl+
+									N'		MonthForDepr1 = dbo.ufn_sys_MonthDiffTs(ctcl.FirstDeprDate, DATEADD(DAY, -1, @_DocDate1)),'+@_nl+
+									N'		ResidualMonth = CAST(IIF(ctcl.AllocateByCapacity = 0, ctcl.UsefulMonth, ctcl.ProductionCapacity) AS NUMERIC(18, 9)) - dbo.ufn_sys_MonthDiffTs(ctcl.FirstDeprDate, @_DocDate1), '+@_nl+
+									N'		Depreciation0 = CASE '+@_nl+
+									N'						WHEN CAST(IIF(ctcl.AllocateByCapacity = 0, ctcl.UsefulMonth, ctcl.ProductionCapacity) AS NUMERIC(18, 9)) - dbo.ufn_sys_MonthDiffTs(ctcl.FirstDeprDate, @_DocDate1) = 0 THEN 0 '+@_nl+
+									N'						END '+@_nl+
+									N'		FROM #t_GtCl0 AS ctcl '+@_nl+
+									N'			INNER JOIN #SoThangSd AS SoThangSd ON ctcl.AssetId = SoThangSd.AssetId AND ctcl.EquityId = SoThangSd.EquityId'+@_nl+
+									N'			INNER JOIN ('+@_nl+
+									N'						SELECT AssetId, EquityId, SUM((IncOriginalCost - DeOriginalCost) - (IncDepreciation - DeDepreciation)) AS NetBookValue'+@_nl+
+									N'				--ELSE ROUND(dk.NetBookValue/(CAST(IIF(ctcl.AllocateByCapacity = 0, ctcl.UsefulMonth, ctcl.ProductionCapacity) AS NUMERIC(18, 9)) - dbo.ufn_sys_MonthDiffTs(ctcl.FirstDeprDate, @_DocDate1)), @_Round)'+@_nl+
+									N'			FROM dbo.vB3' + @_DataCode_Branch + N'AssetDoc'+@_nl+
+									N'		WHERE DocDate < @_DocDate1 AND IsActive=1'+@_nl+
+									N'		GROUP BY AssetId, EquityId) AS dk ON ctcl.AssetId = Dk.AssetId AND ctcl.EquityId = Dk.EquityId '+@_nl+
+									N'		WHERE SoThangSd.UsefulMonthAcc <> 0 OR SoThangSd.ProductionCapacityAcc <> 0'
+
+						EXECUTE sp_executesql @_cmd,N'@_DocDate1 DATE, @_Round INT',@_DocDate1, @_Round
+
+					  
+
+					END
+				ELSE -- trunght thêm để làm số dư
+					BEGIN
+       
+						SET @_Cmd = N'	UPDATE #t_GtCl0  '+@_nl+
+									N'		SET NetBookValue = dk.NetBookValue,'+@_nl+
+									N'			MonthForDepr1 = dbo.ufn_sys_MonthDiffTs(ctcl.FirstDeprDate, DATEADD(DAY, -1, @_DocDate1)),'+@_nl+
+									N'			ResidualMonth = CAST(IIF(ctcl.AllocateByCapacity = 0, ctcl.UsefulMonth, ctcl.ProductionCapacity) AS NUMERIC(18, 9))'+@_nl+
+									N'			- dbo.ufn_sys_MonthDiffTs(ctcl.FirstDeprDate, @_DocDate1), '+@_nl+
+									N'			Depreciation0 = CASE '+@_nl+
+									N'							WHEN CAST(IIF(ctcl.AllocateByCapacity = 0, ctcl.UsefulMonth, ctcl.ProductionCapacity) AS NUMERIC(18, 9)) - dbo.ufn_sys_MonthDiffTs(ctcl.FirstDeprDate, @_DocDate1) = 0 THEN 0 '+@_nl+
+									N'							END '+@_nl+
+									N'			FROM #t_GtCl0 AS ctcl '+@_nl+
+									N'				INNER JOIN #SoThangSd AS SoThangSd ON ctcl.AssetId = SoThangSd.AssetId AND ctcl.EquityId = SoThangSd.EquityId'+@_nl+
+									N'				INNER JOIN ('+@_nl+
+									N'							SELECT AssetId, EquityId, SUM((IncOriginalCost - DeOriginalCost) - (IncDepreciation - DeDepreciation)) AS NetBookValue'+@_nl+
+									N'						ELSE ROUND(dk.NetBookValue/(CAST(IIF(ctcl.AllocateByCapacity = 0, ctcl.UsefulMonth, ctcl.ProductionCapacity) AS NUMERIC(18, 9)) - dbo.ufn_sys_MonthDiffTs(ctcl.FirstDeprDate, @_DocDate1)), @_Round)'+@_nl+
+									N'				FROM dbo.vB3' + @_DataCode_Branch + N'AssetDoc'+@_nl+
+									N'			WHERE DocDate < @_DocDate1 AND IsActive=1'+@_nl+
+									N'			GROUP BY AssetId, EquityId) AS dk ON ctcl.AssetId = Dk.AssetId AND ctcl.EquityId = Dk.EquityId ' 
          
      
-				EXECUTE sp_executesql @_cmd,N'@_DocDate1 DATE, @_Round INT',@_DocDate1, @_Round
+						EXECUTE sp_executesql @_cmd,N'@_DocDate1 DATE, @_Round INT',@_DocDate1, @_Round
  
-			END         
+   
+
+					END         
 			END
 		END
  
  
-		--SELECT Depreciation0,* from #t_GtCl0 return 
+					
 
 
 		IF @_AssetType = 0 AND EXISTS(SELECT * FROM #t_GtCl0 WHERE LastDayFluctuations = FirstDeprDate 
@@ -603,7 +613,7 @@ BEGIN
 			AND LastDayFluctuations < @_ProgUsedFirstDay AND ResidualMonth <>0
 		END
  
-		--SELECT Depreciation0,* from #t_GtCl0 return 
+		
 
 		-- Danh sách tài sản biến động trong kỳ
 		DROP TABLE IF EXISTS #t_BienDong;  
@@ -706,12 +716,14 @@ BEGIN
 
 		IF EXISTS ( SELECT * FROM #t_GtCl0 WHERE AllocateByCapacity = 1 ) 
 		BEGIN
+		 
 			UPDATE GTCL
 			SET Depreciation0 = Depreciation0 * S.QUANTITYINPUT
 			FROM #t_GtCl0 GTCL INNER JOIN #SANLUONG S
 			ON GTCL.AssetId = S.AssetId
 			WHERE AllocateByCapacity = 1 
 
+		 
 		END 
 
 	 
@@ -725,10 +737,7 @@ BEGIN
 			WHERE AllocateByCapacity = 1
 
 		END 
-
-	--select  Depreciation0, * from #t_GtCl0 
-	--select FlucDepr, * from #t_BienDong 
-	 --return 
+ 
 		-- Gộp 2 loại để ra phần tính
 		SET @_Cmd = N' ;WITH khts AS  '+@_nl+
 					N' ( '+@_nl+
@@ -1051,3 +1060,6 @@ END
 GO
 
 
+go
+
+exec [usp_B30AssetDoc_CalcDepreciation_test]  @_Date='01/01/2026 00:00:00.000',@_Year='2026',@_AssetAccount=NULL,@_AssetId='3209522',@_AssetType=1,@_Round=0,@_BranchCode='I11',@_nUserId=1213,@_DeprMethod='3'

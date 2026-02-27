@@ -14,7 +14,7 @@ GO
 -- =============================================
 -- Description:	Tính khấu hao tháng TSCĐ
 -- =============================================
-ALTER PROCEDURE [dbo].[usp_B30AssetDoc_CalcDepreciation] 
+ALTER PROCEDURE [dbo].[usp_B30AssetDoc_CalcDepreciation_test] 
 	@_Date			AS DATE	= '20160101',
 	@_Year			AS VARCHAR(24)		= '', 
 	@_AssetAccount	AS VARCHAR(24)		= '',
@@ -176,7 +176,7 @@ _DepreciationMethod1:
 
 
 		IF @_DeprMethod IN ('','3')
-		EXECUTE usp_B30AssetDoc_CalDepreciation3 
+		EXECUTE usp_B30AssetDoc_CalDepreciation3_26022026 
 				@_Date = @_Date, 
 				@_Year = @_Year, 
 				@_AssetAccount = @_AssetAccount, 
@@ -205,3 +205,7 @@ _DepreciationMethod1:
 END
 GO
 
+go
+
+
+exec [usp_B30AssetDoc_CalcDepreciation_test]  @_Date='01/01/2026 00:00:00.000',@_Year='2026',@_AssetAccount=NULL,@_AssetId='3299605',@_AssetType=1,@_Round=0,@_BranchCode='I11',@_nUserId=1213,@_DeprMethod=''

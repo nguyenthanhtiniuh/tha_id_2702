@@ -7,14 +7,7 @@ GO
 
 SET QUOTED_IDENTIFIER ON
 GO
-
-
-
-
-
- 
 -- Coder: VuLA
-
 -- =============================================
 -- Description: Tính khấu hao tháng TSCĐ - theo PP đường thẳng
 -- Chú ý sau:
@@ -72,9 +65,8 @@ BEGIN
 	@_FirstDayOfAccounting = dbo.ufn_B00FiscalYear_GetFirstUsingDate(@_FiscalYear, @_BranchCode);
 
 	DECLARE @_StartedDate Date = dbo.ufn_B00FiscalYear_GetStartedDate(@_BranchCode), 
-	@_StartedUsingDate Date = dbo.ufn_B00FiscalYear_GetStartedUsingDate(@_BranchCode)
+			@_StartedUsingDate Date = dbo.ufn_B00FiscalYear_GetStartedUsingDate(@_BranchCode)
  
-
 	DROP TABLE IF EXISTS #t_DmTs;
 	SELECT TOP 0
 		   CAST(0 AS INT) AS Id,
@@ -142,7 +134,8 @@ BEGIN
 			N'	@_AssetAccount VARCHAR(24),@_AssetId VARCHAR(512),@_AssetType VARCHAR(24),@_BranchCode VARCHAR(24),@_DeprMethod VARCHAR(24),@_DocDate1 DATE,@_DocDate2 DATE',
 				@_AssetAccount,@_AssetId,@_AssetType,@_BranchCode, @_DeprMethod,@_DocDate1,@_DocDate2
   
-	-- 25-08-2022 ThắngĐQ: TSCĐ sẽ coi điều chỉnh khấu hao cũng là 1 biến động để tính lại giá trị khấu hao = giá trị còn lại / số tháng còn lại
+	-- 25-08-2022 ThắngĐQ: TSCĐ sẽ coi điều chỉnh khấu hao cũng là 1 biến động để tính lại 
+	-- GIÁ TRỊ KHẤU HAO = GIÁ TRỊ CÒN LẠI / SỐ THÁNG CÒN LẠI
 	-- Mô tả theo PS số 1037728 của QuangLM, nếu không muốn tính GD này là biến động thì để lại theo đoạn như CCDC
 	-- Nếu không coi điều chỉnh thủ công khấu hao là 1 biến động: Khi tăng, giảm tài sản việc tính khấu hao sẽ tính ra giá trị không hợp lý
 
@@ -210,8 +203,6 @@ BEGIN
   
 		EXECUTE sp_executesql @_cmd,N'@_DocDate1 DATE, @_DocDate2 DATE',@_DocDate1,@_DocDate2
 	END
-
- 
  
 	 -- Xử lý riêng ngày biến động cuối cùng
 	 -- Việc tính khấu hao đưa hết vào thời điểm ngày cuối cùng của tháng
@@ -231,16 +222,14 @@ BEGIN
 				 N'	WHERE DAY(bd.LastDayFluctuations) <> 1' 
 	 EXECUTE sp_executesql @_cmd
  
-	 -- Xử lý tính huống ngày bắt đầu hạch toán lớn hơn ngày bắt đầu năm thì đối với những biến động
+	 --	Xử lý tình huống ngày bắt đầu hạch toán lớn hơn ngày bắt đầu năm thì đối với những biến động
 	 --  trước ngày bắt đầu hạch toán được quy về số dư đến ngày bắt đầu hạch toán để tính
 	 --  Nếu ko sử dụng cái này thì bỏ
 	IF @_StartedUsingDate > @_StartedDate
-	BEGIN
-    
+	BEGIN    
 		UPDATE #t_BienDongCuoi 
 		SET LastDayFluctuations = @_StartedUsingDate 
-		WHERE LastDayFluctuations < @_StartedUsingDate 
-   
+		WHERE LastDayFluctuations < @_StartedUsingDate    
 	END
  
 	-- Số tháng sử dụng tài sản 
