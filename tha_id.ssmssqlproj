@@ -51,6 +51,12 @@
           <AssociatedConnUserName>bravodev_b10thacoid</AssociatedConnUserName>
           <FullPath>usp_B30AssetDoc_CalDepreciation3.sql</FullPath>
         </FileNode>
+        <FileNode Name="usp_ConvertDataThaco_FromB7_Asset.sql">
+          <AssociatedConnectionMoniker>8c91a03d-f9b4-46c0-a305-b5dcc79ff907:112.109.94.194,7435:False:bravodev_b10thacoid</AssociatedConnectionMoniker>
+          <AssociatedConnSrvName>112.109.94.194,7435</AssociatedConnSrvName>
+          <AssociatedConnUserName>bravodev_b10thacoid</AssociatedConnUserName>
+          <FullPath>usp_ConvertDataThaco_FromB7_Asset.sql</FullPath>
+        </FileNode>
       </Items>
     </LogicalFolder>
     <LogicalFolder Name="Miscellaneous" Type="3" Sorted="true">
