@@ -21,6 +21,12 @@
     </LogicalFolder>
     <LogicalFolder Name="Queries" Type="0" Sorted="true">
       <Items>
+        <FileNode Name="test_I15_CHAY_TS_DUONGTHANG_HESO.sql">
+          <AssociatedConnectionMoniker>8c91a03d-f9b4-46c0-a305-b5dcc79ff907:112.109.94.194,7435:False:bravodev_b10thacoid</AssociatedConnectionMoniker>
+          <AssociatedConnSrvName>112.109.94.194,7435</AssociatedConnSrvName>
+          <AssociatedConnUserName>bravodev_b10thacoid</AssociatedConnUserName>
+          <FullPath>test_I15_CHAY_TS_DUONGTHANG_HESO.sql</FullPath>
+        </FileNode>
         <FileNode Name="usp_Asset_Adjust_AccountMapping_B10.sql">
           <AssociatedConnectionMoniker>8c91a03d-f9b4-46c0-a305-b5dcc79ff907:112.109.94.194,7435:False:bravodev_b10thacoid</AssociatedConnectionMoniker>
           <AssociatedConnSrvName>112.109.94.194,7435</AssociatedConnSrvName>
@@ -62,6 +68,18 @@
           <AssociatedConnSrvName>112.109.94.194,7435</AssociatedConnSrvName>
           <AssociatedConnUserName>bravodev_b10thacoid</AssociatedConnUserName>
           <FullPath>usp_ConvertDataThaco_FromB7_Asset.sql</FullPath>
+        </FileNode>
+        <FileNode Name="usp_TINNT_AddColums.sql">
+          <AssociatedConnectionMoniker>8c91a03d-f9b4-46c0-a305-b5dcc79ff907:112.109.94.194,7435:False:bravodev_b10thacoid</AssociatedConnectionMoniker>
+          <AssociatedConnSrvName>112.109.94.194,7435</AssociatedConnSrvName>
+          <AssociatedConnUserName>bravodev_b10thacoid</AssociatedConnUserName>
+          <FullPath>usp_TINNT_AddColums.sql</FullPath>
+        </FileNode>
+        <FileNode Name="usp_TINNT_check_DefaultValue_Table.sql">
+          <AssociatedConnectionMoniker>8c91a03d-f9b4-46c0-a305-b5dcc79ff907:112.109.94.194,7435:False:bravodev_b10thacoid</AssociatedConnectionMoniker>
+          <AssociatedConnSrvName>112.109.94.194,7435</AssociatedConnSrvName>
+          <AssociatedConnUserName>bravodev_b10thacoid</AssociatedConnUserName>
+          <FullPath>usp_TINNT_check_DefaultValue_Table.sql</FullPath>
         </FileNode>
       </Items>
     </LogicalFolder>
