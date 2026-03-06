@@ -1,10 +1,13 @@
 USE [B10THACOIDACC]
 GO
-/****** Object:  StoredProcedure [dbo].[usp_B30AssetDoc_CalDepreciation3]    Script Date: 06-03-2026 11:16:35 ******/
+
+/****** Object:  StoredProcedure [dbo].[usp_B30AssetDoc_CalDepreciation3]    Script Date: 06-03-2026 18:35:57 ******/
 SET ANSI_NULLS ON
 GO
+
 SET QUOTED_IDENTIFIER ON
 GO
+
 -- Coder: VuLA
 -- =============================================
 -- Description: Tính khấu hao tháng TSCĐ - theo PP đường thẳng
@@ -375,18 +378,22 @@ BEGIN
 	FROM   B30AssetProductActual
 
 	UPDATE tp
-	SET MonthDepr =sl.MonthDepr
+	SET MonthDepr = ROUND(sl.MonthDepr,@_Round)
 	FROM #NhapTp tp LEFT JOIN
 				(
 					SELECT StageId,
 						   ProductId,
-						   max(MonthDepr) AS MonthDepr
+						   SUM(MonthDepr) AS MonthDepr
 					FROM #SanLuong
 					GROUP BY StageId,
 							 ProductId
 				) sl
 					ON sl.ProductId = Tp.ProductId
 					   AND sl.StageId = Tp.StageId
+
+	--SELECT * FROM #SanLuong
+
+	--SELECT * FROM #NhapTp
 
 	EXEC dbo.usp_sys_Append @_TableSource = '#NhapTp',          -- nvarchar(128)
 	                        @_TableDestination = '#NhapTpActual' 
@@ -417,20 +424,13 @@ BEGIN
 
 	DECLARE @_TableName  VARCHAR(264) = ''
     SELECT @_TableName  = 'B3' + @_DataCode_Branch  + 'AssetProductActual'
-	
 
 		--xoa du lieu chay lan truoc
 	SELECT @_cmd = N' DELETE B10THACOIDACC_Data.dbo.  ' + @_TableName + N' WHERE DocDate = '''+ FORMAT(@_DocDate2,'yyyyMMdd') +'''  '
 	EXEC (@_cmd)
-
-
-	--SELECT * FROM #NhapTp
-	
-	--SELECT * FROM #NhapTpActual
-
-	--SELECT @_TableName
-	--RETURN 
  
+ 
+
 	--append vao bang du lieu phat sinh
 	EXEC dbo.usp_sys_Append @_TableSource = N'#NhapTpActual' -- nvarchar(128)
                            ,@_TableDestination = @_TableName
@@ -508,6 +508,8 @@ BEGIN
  
 	EXECUTE sp_executesql @_cmd,N'@_DocDate1 DATE, @_DocDate2 DATE',@_DocDate1,@_DocDate2
  
+	--SELECT * FROM #t_GtCl0 AS tgc RETURN
+
 	IF @_AssetType = 0
 	BEGIN
 		DELETE FROM #t_GtCl0
@@ -545,6 +547,8 @@ BEGIN
 								WHEN ResidualMonth > 0 THEN
 									ROUND(NetBookValue / ResidualMonth, @_Round0)
 							END 
+
+						
   		 
 		-- Xử lý riêng tình huống lấy số dư cuối chia thời gian sử dụng còn lại
 		-- Chỉ lấy CCDC có điều chinh hao mòn quá khứ
@@ -598,6 +602,8 @@ BEGIN
 				   AND a.EquityId = b.EquityId
 		WHERE a.ResidualMonth > 0  
 
+		
+
 		END  
 		DROP TABLE IF EXISTS #_CtCl
 
@@ -609,26 +615,35 @@ BEGIN
     
 		UPDATE #t_GtCl0 SET ResidualMonth = CAST(IIF(AllocateByCapacity = 0, UsefulMonth, ProductionCapacity) AS NUMERIC(18, 9)) - MonthForDepr1  
 
+		 
+
 		UPDATE #t_GtCl0 SET Depreciation0 = ROUND(NetBookValue/ResidualMonth, @_Round0 ) WHERE ResidualMonth > 0
  
-		--SELECT ResidualMonth,MonthForDepr1 FROM #t_GtCl0
+
 		
-	
+		
 		IF EXISTS (SELECT * FROM #KHSanluong c WHERE ISNULL(C.MonthDepr,0) <> 0 )
 		BEGIN			 
 			UPDATE #t_GtCl0
-			SET Depreciation0 = ISNULL(C.MonthDepr,0)
+			SET Depreciation0 = ROUND(ISNULL(C.MonthDepr,0),@_Round)
 			FROM #t_GtCl0 GTCL
-				INNER JOIN #KHSanluong AS   C
-					ON GTCL.AssetId = C.AssetId WHERE GTCL.AssetId IN (SELECT AssetId FROM #KHSanluong c WHERE ISNULL(C.MonthDepr,0) <> 0)
+				INNER JOIN (SELECT SUM(MonthDepr) AS MonthDepr,AssetId FROM #NhapTpActual GROUP BY AssetId ) AS   C
+					ON GTCL.AssetId = C.AssetId WHERE GTCL.AssetId IN (SELECT AssetId FROM #NhapTpActual c WHERE ISNULL(C.MonthDepr,0) <> 0)
 		END 
-		 
+ 
+
+		--SELECT * FROM #Sanluong
+
+		--SELECT * FROM #KHSanluong RETURN 			
+
 		-- MonthForDepr1 số tháng phân bổ
 		-- ResidualMonth số tháng phân bổ còn lại
 		-- Depreciation0 giá trị phân bổ
 	 
 	END
  
+ 	
+
  -- Tình huống đặc biệt:
  -- Tài sản có biến động thời gian sử dụng trong kỳ tính toán khấu hao tháng được tính = GTCL đầu kỳ Chia Thời gian còn lại (đã cộng tăng giảm thời gian sử dụng)
  -- Chú ý: Biến động về thời gian sử dụng bất kỳ ngày nào trong tháng cũng được tính là ngày đầu của tháng tính toán.
@@ -817,14 +832,14 @@ BEGIN
 				 CAST(NULL AS INT) as DeprMethod
 		INTO #t_khts  
 		FROM B20Asset WITH (NOLOCK)
-		
+ 
 		--phần mềm tự xác định giá trị khấu hao cho 1 sản phầm AmountPerProduct, trường hợp 1 ts,ccdc bổ cho nhiều sản phẩm và áp dụng 1 giá chung cho N sản phẩm
 		BEGIN 
 			UPDATE #t_GtCl0
-				SET AmountPerProduct = Depreciation0
+				SET AmountPerProduct = ISNULL(Depreciation0,0)
 				FROM #t_GtCl0 gtcl				 
 				WHERE gtcl.AssetId NOT IN (SELECT ks.AssetId FROM #KHSanluong  ks WHERE MonthDepr <> 0 ) 
- 
+
 			IF EXISTS (SELECT * FROM #t_GtCl0 WHERE AllocateByCapacity = 1)
 			BEGIN
  
@@ -839,18 +854,20 @@ BEGIN
 						GROUP BY AssetId
 					) S
 						ON GTCL.AssetId = S.AssetId
-				WHERE AllocateByCapacity = 1 AND  ISNULL(AmountPerProduct,0) <> 0
-				--AND   GTCL.AssetId NOT IN (SELECT ks.AssetId FROM #KHSanluong AS ks WHERE DeprAmount <> 0 ) 
-			END
-		
+				WHERE AllocateByCapacity = 1 AND  ISNULL(AmountPerProduct,0) <> 0				
+			END		
+
+		 
 		END
+
+		--SELECT Depreciation0, * FROM #t_GtCl0 RETURN 
  
 		IF EXISTS (SELECT * FROM #t_BienDong WHERE AllocateByCapacity = 1)
 		BEGIN
 
 
 			UPDATE t_BienDong
-			SET FlucDepr = FlucDepr * S.QuantityInput
+			SET FlucDepr =ROUND( FlucDepr * S.QuantityInput,@_Round)
 			FROM #t_BienDong t_BienDong
 				INNER JOIN
 				(
@@ -865,6 +882,7 @@ BEGIN
 
 		END
  
+		--SELECT Depreciation0  ,* FROM #t_GtCl0  RETURN 
 		--SELECT * FROM #t_khts AS tk
 		
 		-- Gộp 2 loại để ra phần tính
@@ -1155,5 +1173,3 @@ END
 
 GO
 
-SET DATEFORMAT DMY 
-EXEC usp_B30AssetDoc_CalcDepreciation @_Date='01/01/2026 00:00:00.000',@_Year='2026',@_AssetAccount=NULL,@_AssetId='3385939',@_AssetType=0,@_Round=0,@_BranchCode='I15',@_AutoDisposals=0,@_nUserId=1213,@_LangId=0,@_DeprMethod='3'
