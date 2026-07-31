@@ -1,5 +1,0 @@
-SELECT *
-FROM B00FileList
-ORDER BY LastUpdated_ DESC
-
-SELECT GETDATE()

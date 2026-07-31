@@ -1,8 +1,0 @@
-USE B10THACOID
-GO
-
-
-
-SELECT *
-FROM dbo.B00Logging AS bl
-ORDER BY ID DESC
