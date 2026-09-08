@@ -1,0 +1,9 @@
+SELECT KMP_CODE,
+       KMP_ID,
+       Stt,
+       RowId
+FROM B10THACOIDACC.dbo.I23_KMP
+
+SELECT *
+FROM dbo.B32002GeneralLedger
+WHERE STT = 'I230213389'

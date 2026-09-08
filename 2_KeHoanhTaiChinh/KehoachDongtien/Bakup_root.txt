@@ -1,0 +1,1154 @@
+<root>
+	<Cols>
+		<Column_0>
+			<SizeType>2</SizeType>
+			<Width>2</Width>
+		</Column_0>
+	</Cols>
+	<Rows>
+		<Row_0>
+			<SizeType>2</SizeType>
+			<Height>2</Height>
+		</Row_0>
+	</Rows>
+	<panelEditor>
+		<Dock>Fill</Dock>
+		<Rows>
+			<Row_1>
+				<SizeType>Percent</SizeType>
+				<Height>100</Height>
+			</Row_1>
+		</Rows>
+		<Cols>
+			<Column_0>
+				<SizeType>Percent</SizeType>
+				<Width>100</Width>
+			</Column_0>
+		</Cols>
+		<Controls>
+			<panelGeneralInfo>
+				<Column>0</Column>
+				<ColumnSpan>2</ColumnSpan>
+				<Row>0</Row>
+				<Text>
+					<Vietnamese>Thông tin chung</Vietnamese>
+					<English>General information</English>
+					<Japanese>ຂໍ້ມູນທົ່ວໄປ</Japanese>
+					<Chinese>ព័ត៌មានទូទៅ</Chinese>
+					<Korean>ယေဘုယျသတင်းအချက်အလက်</Korean>
+				</Text>
+				<Cols>
+					<Column_1>
+						<SizeType>Percent</SizeType>
+						<Width>10</Width>
+					</Column_1>
+					<Column_3>
+						<SizeType>Percent</SizeType>
+						<Width>20</Width>
+					</Column_3>
+					<Column_4>
+						<SizeType>Percent</SizeType>
+						<Width>80</Width>
+					</Column_4>
+				</Cols>
+				<Controls>
+					<lblEffectiveDate>
+						<Text>
+							<Vietnamese>Ngày hiệu lực</Vietnamese>
+							<English />
+						</Text>
+						<Row />
+						<Column>0</Column>
+					</lblEffectiveDate>
+					<txtEffectiveDate>
+						<Anchor>15</Anchor>
+						<ClassName>BravoDateInputBox</ClassName>
+						<DataMember>EffectiveDate</DataMember>
+						<Column>1</Column>
+					</txtEffectiveDate>
+					<lblDocNo>
+						<Text>
+							<Vietnamese>Số hiệu</Vietnamese>
+							<English />
+						</Text>
+						<Column>2</Column>
+					</lblDocNo>
+					<txtDocNo>
+						<Anchor>15</Anchor>
+						<ClassName>BravoKeyInputBox</ClassName>
+						<CharacterCasing>Upper</CharacterCasing>
+						<DataMember>DocNo</DataMember>
+						<Column>3</Column>
+					</txtDocNo>
+					<lblCommandKey>
+						<Text>
+							<Vietnamese>Báo cáo liên kết</Vietnamese>
+							<English />
+						</Text>
+						<Column>0</Column>
+						<Row />
+					</lblCommandKey>
+					<txtCommandKey>
+						<Anchor>15</Anchor>
+						<ClassName>BravoLookupBox</ClassName>
+						<LookupKey>Command0</LookupKey>
+						<FilterKey>DLLName='Reporter'</FilterKey>
+						<DataMember>CommandKey</DataMember>
+						<Column>1</Column>
+						<ColumnSpan>3</ColumnSpan>
+						<Dock>Fill</Dock>
+					</txtCommandKey>
+					<lblDescription>
+						<Text>
+							<Vietnamese>Diễn giải</Vietnamese>
+							<English />
+						</Text>
+						<Row />
+						<Column>0</Column>
+					</lblDescription>
+					<txtDescription>
+						<Anchor>15</Anchor>
+						<ClassName>BravoTextBox</ClassName>
+						<DataMember>Description</DataMember>
+						<Column>1</Column>
+						<ColumnSpan>5</ColumnSpan>
+						<Dock>Fill</Dock>
+					</txtDescription>
+				</Controls>
+				<nLockColumn>0</nLockColumn>
+				<ClassName>BravoExpandingPanel</ClassName>
+			</panelGeneralInfo>
+			<BravoGridContainer>
+				<Row />
+				<Column>0</Column>
+				<Assembly>Bravo.DataEditor</Assembly>
+				<ClassName>BravoGridContainer</ClassName>
+				<Items>
+					<Item_0>
+						<Styles>
+							<Style_BOLD>
+								<Name>*</Name>
+								<Expr>IIF(_FormatStyleKey='BOLD','Font:,,style=Bold;','')</Expr>
+							</Style_BOLD>
+							<Style_Italic>
+								<Name>*</Name>
+								<Expr>IIF(_FormatStyleKey='Italic','Font:,,style=Italic;','')</Expr>
+							</Style_Italic>
+						</Styles>
+						<Text>
+							<English>Declaring formula</English>
+							<Japanese>ຖະແຫຼງການສູດ</Japanese>
+							<Chinese>សេចក្តីប្រកាសរូបមន្ត</Chinese>
+							<Korean>ဖော်မြူလာကြေငြာချက်</Korean>
+							<Vietnamese>Khai báo công thức</Vietnamese>
+						</Text>
+						<Rows>
+							<Row_0>
+								<Height>50</Height>
+							</Row_0>
+						</Rows>
+						<Cols>
+							<KqtCashFlowPlanId>
+								<Width>1</Width>
+							</KqtCashFlowPlanId>
+							<IsPrint>
+								<Editor />
+								<Style>DataType:System.Boolean;ImageAlign:CenterCenter;</Style>
+								<Width>30</Width>
+								<Rows>
+									<Row_0>
+										<Text>
+											<Vietnamese>In C/K</Vietnamese>
+											<English>Print</English>
+											<Chinese>នៅក្នុង C / k</Chinese>
+											<Japanese>ໃນ c / k</Japanese>
+											<Korean>C / k ၌တည်၏</Korean>
+										</Text>
+										<Style>UserData:IsPrint;</Style>
+									</Row_0>
+									<Row_1>
+										<Style>UserData:IsPrint;</Style>
+									</Row_1>
+								</Rows>
+							</IsPrint>
+							<Id>
+								<Rows>
+									<Row_0>
+										<Text>
+											<Vietnamese>ID</Vietnamese>
+										</Text>
+									</Row_0>
+								</Rows>
+								<Width>0</Width>
+							</Id>
+							<BuiltinOrder>
+								<Editor />
+								<Rows>
+									<Row_0>
+										<Text>
+											<Vietnamese>Stt</Vietnamese>
+										</Text>
+									</Row_0>
+								</Rows>
+								<Width>25</Width>
+							</BuiltinOrder>
+							<PrintOrder>
+								<Editor>
+									<ClassName>BravoTextBox</ClassName>
+								</Editor>
+								<Style>TextAlign:LeftTop;</Style>
+								<Width>0</Width>
+								<Rows>
+									<Row_0>
+										<Text>
+											<Vietnamese>Stt</Vietnamese>
+											<English>Print order</English>
+											<Chinese>Stt</Chinese>
+											<Japanese>ຄົງ</Japanese>
+											<Korean>စဆဲတီ</Korean>
+										</Text>
+										<Style>UserData:PrintOrder;</Style>
+									</Row_0>
+									<Row_1>
+										<Style>UserData:PrintOrder;</Style>
+									</Row_1>
+								</Rows>
+							</PrintOrder>
+							<Description>
+								<Editor>
+									<TrimStart>False</TrimStart>
+								</Editor>
+								<Style>TextAlign:LeftTop;</Style>
+								<Width>200</Width>
+								<Rows>
+									<Row_0>
+										<Text>
+											<Vietnamese>Chỉ tiêu</Vietnamese>
+											<English>Items</English>
+											<Chinese>ការចង្អុលរបម</Chinese>
+											<Japanese>ຕົວຊີ້ວັດ</Japanese>
+											<Korean>ညွှန်ပြတာ -</Korean>
+										</Text>
+										<Style>UserData:Description;</Style>
+									</Row_0>
+									<Row_1>
+										<Style>UserData:Description;</Style>
+									</Row_1>
+								</Rows>
+							</Description>
+							<ExcludeCrspAccount>
+								<Editor>
+									<ClassName>BravoLookupBox</ClassName>
+									<lookupMode>3</lookupMode>
+									<LookupKey>ChartOfAccount</LookupKey>
+								</Editor>
+								<Style>TextAlign:LeftTop;</Style>
+								<Width>0</Width>
+								<Rows>
+									<Row_0>
+										<Text>
+											<Vietnamese>Loại trừ Tk DU</Vietnamese>
+											<English>Exclucing Opp-Account</English>
+											<Chinese>លុបបំបាត់ du tk</Chinese>
+											<Japanese>ລົບລ້າງ du tk</Japanese>
+											<Korean>Du tk ဖယ်ရှားပါ</Korean>
+										</Text>
+									</Row_0>
+								</Rows>
+							</ExcludeCrspAccount>
+							<CashFlowId>
+								<Editor>
+									<ClassName>BravoLookupBox</ClassName>
+									<LookupKey>CashFlowAll</LookupKey>
+									<lookupMode>ChecklistValueMember</lookupMode>
+								</Editor>
+								<!--zDisplayTextFormat>{0}</zDisplayTextFormat-->
+								<Style>TextAlign:LeftTop;</Style>
+								<Width>86</Width>
+								<Rows>
+									<Row_0>
+										<Text>
+											<Vietnamese>Hoạt động dòng tiền</Vietnamese>
+											<English>Management cash flow category</English>
+											<Japanese>ລາຍການໄຫລຂອງເງິນສົດທີ່ພົ້ນເດັ່ນ</Japanese>
+											<Chinese>ធាតុលំហូរសាច់ប្រាក់លេចធ្លោ</Chinese>
+											<Korean>ထူးချွန်သောငွေသားစီးဆင်းမှုပစ္စည်းများ</Korean>
+										</Text>
+									</Row_0>
+								</Rows>
+							</CashFlowId>
+							<VarKey>
+								<Visible>True</Visible>
+								<Width>80</Width>
+								<Editor>
+									<ClassName>BravoLookupBox</ClassName>
+									<LookupKey>ClassInfo2</LookupKey>
+									<FilterKey>ParentCode = 'DEFBusinessPlan'</FilterKey>
+								</Editor>
+								<Rows>
+									<Row_0>
+										<Text>
+											<Vietnamese>Loại</Vietnamese>
+											<English>Items</English>
+											<Chinese>项目</Chinese>
+											<Japanese>アイテム</Japanese>
+											<Custom>항목입니다.</Custom>
+										</Text>
+										<Style>UserData:VarKey;</Style>
+									</Row_0>
+								</Rows>
+							</VarKey>
+							<VarValue>
+								<Visible>True</Visible>
+								<Width>80</Width>
+								<Editor>
+									<Expr>IIF(VarKey&lt;&gt;'', VarKey, '')</Expr>
+									<Controls>
+										<Default>
+											<ClassName>BravoTextBox</ClassName>
+											<autoCorrectOptions>None</autoCorrectOptions>
+											<TrimStart>False</TrimStart>
+										</Default>
+										<Customer>
+											<ClassName>BravoLookupBox</ClassName>
+											<LookupKey>Customer</LookupKey>
+											<FilterKey>IsGroup = 1</FilterKey>
+											<bindingMembers>
+												<Name>Description</Name>
+											</bindingMembers>
+										</Customer>
+										<ProfitCenter>
+											<ClassName>BravoLookupBox</ClassName>
+											<LookupKey>ProfitCenter</LookupKey>
+											<FilterKey>IsGroup = 1 OR IsGroup = 0</FilterKey>
+											<bindingMembers>
+												<Name>Description</Name>
+											</bindingMembers>
+										</ProfitCenter>
+										<MESGroupCode>
+											<ClassName>BravoLookupBox</ClassName>
+											<LookupKey>ClassInfo</LookupKey>
+											<FilterKey>ParentCode = 'MESGroupCode'</FilterKey>
+											<lookupMode>ChecklistValueMember</lookupMode>
+										</MESGroupCode>
+										<BranchCode>
+											<ClassName>BravoLookupBox</ClassName>
+											<LookupKey>AllBranch</LookupKey>
+										</BranchCode>
+										<RouteCode>
+											<ClassName>BravoLookupBox</ClassName>
+											<LookupKey>DmsRoute</LookupKey>
+											<FilterKey>IsGroup = 1 OR IsGroup = 0</FilterKey>
+											<bindingMembers />
+										</RouteCode>
+										<CostFactorId>
+											<ClassName>BravoLookupBox</ClassName>
+											<LookupKey>CostFactor</LookupKey>
+											<bindingMembers />
+										</CostFactorId>
+										<AssetGroupId>
+											<ClassName>BravoLookupBox</ClassName>
+											<LookupKey>Asset</LookupKey>
+											<FilterKey>IsGroup=1</FilterKey>
+										</AssetGroupId>
+										<Account>
+											<ClassName>BravoLookupBox</ClassName>
+											<LookupKey>ChartOfAccount</LookupKey>
+											<lookupMode>ChecklistValueMember</lookupMode>
+										</Account>
+										<ExpenseCatgId>
+											<ClassName>BravoLookupBox</ClassName>
+											<LookupKey>ExpenseCatg</LookupKey>
+											<lookupMode>ChecklistValueMember</lookupMode>
+											<bindingMembers />
+										</ExpenseCatgId>
+										<ClassCode1>
+											<ClassName>BravoLookupBox</ClassName>
+											<LookupKey>ClassReport</LookupKey>
+											<FilterKey>ParentCode = 'TYPE_MMTB'</FilterKey>
+										</ClassCode1>
+										<ProductLevelId>
+											<ClassName>BravoLookupBox</ClassName>
+											<LookupKey>ProductLevel</LookupKey>
+										</ProductLevelId>
+										<CashFlowId>
+											<ClassName>BravoLookupBox</ClassName>
+											<LookupKey>CashFlow</LookupKey>
+											<lookupMode>ChecklistValueMember</lookupMode>
+										</CashFlowId>
+										<JobId>
+											<ClassName>BravoLookupBox</ClassName>
+											<LookupKey>Job</LookupKey>
+											<lookupMode>ChecklistValueMember</lookupMode>
+										</JobId>
+									</Controls>
+								</Editor>
+								<Rows>
+									<Row_0>
+										<Text>
+											<Vietnamese>Giá trị</Vietnamese>
+											<English>Items</English>
+											<Chinese>项目</Chinese>
+											<Japanese>アイテム</Japanese>
+											<Custom>항목입니다.</Custom>
+										</Text>
+										<Style>UserData:VarValue;</Style>
+									</Row_0>
+								</Rows>
+								<Style>TextAlign:LeftTop;</Style>
+							</VarValue>
+							<ItemLevel>
+								<Editor />
+								<Style>RightAlign:RightTop;</Style>
+								<Format>N0</Format>
+								<Width>32</Width>
+								<Rows>
+									<Row_0>
+										<Text>
+											<Vietnamese>Bậc</Vietnamese>
+											<English>Level</English>
+											<Chinese>ឈាន</Chinese>
+											<Japanese>ບາດກ້າວ</Japanese>
+											<Korean>လှမ်း</Korean>
+										</Text>
+										<Style>UserData:ItemLevel;</Style>
+									</Row_0>
+									<Row_1>
+										<Style>UserData:ItemLevel;</Style>
+									</Row_1>
+								</Rows>
+							</ItemLevel>
+							<ItemNo>
+								<Editor />
+								<Style>TextAlign:LeftTop;</Style>
+								<Width>50</Width>
+								<Rows>
+									<Row_0>
+										<Text>
+											<Vietnamese>Mã số</Vietnamese>
+											<English>Code</English>
+											<Chinese>ច្បាប់រដ្ឋប្បវេនី</Chinese>
+											<Japanese>ລະຫັດ</Japanese>
+											<Korean>လုံးပေါင်းပြဌါန်းသည့်ဉပဒေ</Korean>
+										</Text>
+										<Style>UserData:ItemNo;</Style>
+									</Row_0>
+									<Row_1>
+										<Style>UserData:ItemNo;</Style>
+									</Row_1>
+								</Rows>
+							</ItemNo>
+							<Formula>
+								<Editor />
+								<Style>TextAlign:LeftTop;</Style>
+								<Width>180</Width>
+								<Rows>
+									<Row_0>
+										<Text>
+											<Vietnamese>Công thức</Vietnamese>
+											<English>Formulas</English>
+											<Chinese>វិច្ជាធេវីម្ហូប</Chinese>
+											<Japanese>ສູດທີ່</Japanese>
+											<Korean>ဆေးစာ</Korean>
+										</Text>
+									</Row_0>
+								</Rows>
+							</Formula>
+							<Account>
+								<Editor>
+									<ClassName>BravoLookupBox</ClassName>
+									<lookupMode>ChecklistValueMember</lookupMode>
+									<LookupKey>ChartOfAccount</LookupKey>
+								</Editor>
+								<Style>TextAlign:LeftTop;</Style>
+								<Width>86</Width>
+								<Rows>
+									<Row_0>
+										<Text>
+											<Vietnamese>Tài khoản</Vietnamese>
+											<English>Account</English>
+											<Chinese>កននេយ្យ</Chinese>
+											<Japanese>ບັນຊີ</Japanese>
+											<Korean>ငေှစာရင်း</Korean>
+										</Text>
+									</Row_0>
+								</Rows>
+							</Account>
+							<CrspAccount>
+								<Editor>
+									<ClassName>BravoLookupBox</ClassName>
+									<lookupMode>ChecklistValueMember</lookupMode>
+									<LookupKey>ChartOfAccount</LookupKey>
+								</Editor>
+								<Style>TextAlign:LeftTop;</Style>
+								<Width>120</Width>
+								<Rows>
+									<Row_0>
+										<Text>
+											<Vietnamese>Tk đối ứng</Vietnamese>
+											<English>Opp-Account</English>
+											<Chinese>គណនីចំរាស់</Chinese>
+											<Japanese>ບັນຊີ reciprocal</Japanese>
+											<Korean>အပြန်အလှန်အကောင့်</Korean>
+										</Text>
+									</Row_0>
+								</Rows>
+							</CrspAccount>
+							<Detail>
+								<Visible>False</Visible>
+								<Editor>
+									<ClassName>BravoLookupBox</ClassName>
+									<LookupKey>Class</LookupKey>
+									<FilterKey>ParentCode='REP_CASHFLOW_Detail'</FilterKey>
+								</Editor>
+								<Style>TextAlign:LeftTop;</Style>
+								<Width>150</Width>
+								<Rows>
+									<Row_0>
+										<Text>
+											<Vietnamese>Chi tiết</Vietnamese>
+											<!--09/12/2024 LienNTP sửa text-->
+											<English>Details</English>
+											<Chinese>សេចក្ដីបិស្ដារ</Chinese>
+											<Japanese>ລາຍລະອຽດ</Japanese>
+											<Korean>အသေးစိတ်</Korean>
+										</Text>
+									</Row_0>
+								</Rows>
+							</Detail>
+							<_FormatStyleKey>
+								<Editor />
+								<Name>_FormatStyleKey</Name>
+								<Style>TextAlign:LeftTop;</Style>
+								<Width>0</Width>
+								<Rows>
+									<Row_0>
+										<Text>
+											<Vietnamese>Định dạng</Vietnamese>
+											<English>Rep format</English>
+											<Chinese>រតង់រតាយ</Chinese>
+											<Japanese>ຮູບແບບ</Japanese>
+											<Korean>ပမာဏ</Korean>
+										</Text>
+									</Row_0>
+								</Rows>
+							</_FormatStyleKey>
+							<Description_English>
+								<Editor>
+									<TrimStart>False</TrimStart>
+								</Editor>
+								<Style>TextAlign:LeftTop;</Style>
+								<Width>0</Width>
+								<Rows>
+									<Row_0>
+										<Text>
+											<Vietnamese>Chỉ tiêu English</Vietnamese>
+											<English>English Items</English>
+											<Chinese>សូចនាករភាសាអង់គ្លេស</Chinese>
+											<Japanese>ຕົວຊີ້ວັດພາສາອັງກິດ</Japanese>
+											<Korean>အင်္ဂလိပ်အညွှန်းကိန်း</Korean>
+										</Text>
+										<Style>UserData:Description_English;</Style>
+									</Row_0>
+								</Rows>
+							</Description_English>
+							<Description_Japanese>
+								<Editor>
+									<TrimStart>False</TrimStart>
+								</Editor>
+								<Style>TextAlign:LeftTop;</Style>
+								<Width>0</Width>
+								<Rows>
+									<Row_0>
+										<Text>
+											<Vietnamese>Chỉ tiêu Nhật</Vietnamese>
+											<English>Japanese Items</English>
+											<Chinese>គោលដៅជប៉ុន</Chinese>
+											<Japanese>ເປົ້າຫມາຍຍີ່ປຸ່ນ</Japanese>
+											<Korean>ဂျပန်ပစ်မှတ်</Korean>
+										</Text>
+										<Style>UserData:Description_Japanese;</Style>
+									</Row_0>
+								</Rows>
+							</Description_Japanese>
+							<Description_Chinese>
+								<Editor>
+									<TrimStart>False</TrimStart>
+								</Editor>
+								<Style>TextAlign:LeftTop;</Style>
+								<Width>0</Width>
+								<Rows>
+									<Row_0>
+										<Text>
+											<Vietnamese>Chỉ tiêu Trung</Vietnamese>
+											<English>Chinese Items</English>
+											<Chinese>គោលដៅមធ្យម</Chinese>
+											<Japanese>ເປົ້າຫມາຍປານກາງ</Japanese>
+											<Korean>အလယ်အလတ်ပစ်မှတ်</Korean>
+										</Text>
+										<Style>UserData:Description_Chinese;</Style>
+									</Row_0>
+								</Rows>
+							</Description_Chinese>
+							<Description_Korean>
+								<Editor>
+									<TrimStart>False</TrimStart>
+								</Editor>
+								<Style>TextAlign:LeftTop;</Style>
+								<Width>0</Width>
+								<Rows>
+									<Row_0>
+										<Text>
+											<Vietnamese>Chỉ tiêu Hàn</Vietnamese>
+											<English>Korea Items</English>
+											<Chinese>លក្ខណៈវិនិច្ឆ័យផ្សារ</Chinese>
+											<Japanese>ເງື່ອນໄຂການເຊື່ອມໂຍງ</Japanese>
+											<Korean>ဂဟေဆော်ခြင်းစံ</Korean>
+										</Text>
+										<Style>UserData:Description_Korean;</Style>
+									</Row_0>
+								</Rows>
+							</Description_Korean>
+							<Loai_Ps>
+								<Editor>
+									<ClassName>BravoLookupBox</ClassName>
+									<LookupKey>Class</LookupKey>
+									<FilterKey>ParentCode = 'REP_CASHFLOW_PERIOD'</FilterKey>
+								</Editor>
+								<Style>TextAlign:LeftTop;</Style>
+								<Width>58</Width>
+								<Rows>
+									<Row_0>
+										<Text>
+											<Vietnamese>Loại Ps</Vietnamese>
+											<English>Type</English>
+											<Chinese>ប្រភេទ PS</Chinese>
+											<Japanese>ປະເພດ PS</Japanese>
+											<Korean>PS အမျိုးအစား</Korean>
+										</Text>
+									</Row_0>
+								</Rows>
+							</Loai_Ps>
+						</Cols>
+						<DataMember>B10KqtCashFlowPlan</DataMember>
+					</Item_0>
+					<Item_1>
+						<Styles>
+							<Style_BOLD>
+								<Name>*</Name>
+								<Expr>IIF(_FormatStyleKey='BOLD','Font:,,style=Bold;','')</Expr>
+							</Style_BOLD>
+							<Style_Italic>
+								<Name>*</Name>
+								<Expr>IIF(_FormatStyleKey='Italic','Font:,,style=Italic;','')</Expr>
+							</Style_Italic>
+						</Styles>
+						<Text>
+							<Vietnamese>(DEV)</Vietnamese>
+							<English>Declaring formula</English>
+							<Japanese>ຖະແຫຼງການສູດ</Japanese>
+							<Chinese>សេចក្តីប្រកាសរូបមន្ត</Chinese>
+							<Korean>ဖော်မြူလာကြေငြာချက်</Korean>
+						</Text>
+						<Rows>
+							<Row_0>
+								<Height>50</Height>
+							</Row_0>
+						</Rows>
+						<Cols>
+							<KqtCashFlowPlanId>
+								<Width>1</Width>
+							</KqtCashFlowPlanId>
+							<IsPrint>
+								<Editor />
+								<Style>DataType:System.Boolean;ImageAlign:CenterCenter;</Style>
+								<Width>55</Width>
+								<Rows>
+									<Row_0>
+										<Text>
+											<Vietnamese>In C/K</Vietnamese>
+											<English>Print</English>
+											<Chinese>នៅក្នុង C / k</Chinese>
+											<Japanese>ໃນ c / k</Japanese>
+											<Korean>C / k ၌တည်၏</Korean>
+										</Text>
+										<Style>UserData:IsPrint;</Style>
+									</Row_0>
+									<Row_1>
+										<Style>UserData:IsPrint;</Style>
+									</Row_1>
+								</Rows>
+							</IsPrint>
+							<Id>
+								<Rows>
+									<Row_0>
+										<Text>
+											<Vietnamese>ID</Vietnamese>
+										</Text>
+									</Row_0>
+								</Rows>
+								<Width>35</Width>
+							</Id>
+							<BuiltinOrder>
+								<Editor />
+								<Rows>
+									<Row_0>
+										<Text>
+											<Vietnamese>Stt</Vietnamese>
+										</Text>
+									</Row_0>
+								</Rows>
+								<Width>35</Width>
+							</BuiltinOrder>
+							<PrintOrder>
+								<Editor>
+									<ClassName>BravoTextBox</ClassName>
+								</Editor>
+								<Style>TextAlign:LeftTop;</Style>
+								<Width>0</Width>
+								<Rows>
+									<Row_0>
+										<Text>
+											<Vietnamese>Stt</Vietnamese>
+											<English>Print order</English>
+											<Chinese>Stt</Chinese>
+											<Japanese>ຄົງ</Japanese>
+											<Korean>စဆဲတီ</Korean>
+										</Text>
+										<Style>UserData:PrintOrder;</Style>
+									</Row_0>
+									<Row_1>
+										<Style>UserData:PrintOrder;</Style>
+									</Row_1>
+								</Rows>
+							</PrintOrder>
+							<Description>
+								<Editor>
+									<TrimStart>False</TrimStart>
+								</Editor>
+								<Style>TextAlign:LeftTop;</Style>
+								<Width>250</Width>
+								<Rows>
+									<Row_0>
+										<Text>
+											<Vietnamese>Chỉ tiêu</Vietnamese>
+											<English>Items</English>
+											<Chinese>ការចង្អុលរបម</Chinese>
+											<Japanese>ຕົວຊີ້ວັດ</Japanese>
+											<Korean>ညွှန်ပြတာ -</Korean>
+										</Text>
+										<Style>UserData:Description;</Style>
+									</Row_0>
+									<Row_1>
+										<Style>UserData:Description;</Style>
+									</Row_1>
+								</Rows>
+							</Description>
+							<ExcludeCrspAccount>
+								<Editor>
+									<ClassName>BravoLookupBox</ClassName>
+									<lookupMode>3</lookupMode>
+									<LookupKey>ChartOfAccount</LookupKey>
+								</Editor>
+								<Style>TextAlign:LeftTop;</Style>
+								<Width>0</Width>
+								<Rows>
+									<Row_0>
+										<Text>
+											<Vietnamese>Loại trừ Tk DU</Vietnamese>
+											<English>Exclucing Opp-Account</English>
+											<Chinese>លុបបំបាត់ du tk</Chinese>
+											<Japanese>ລົບລ້າງ du tk</Japanese>
+											<Korean>Du tk ဖယ်ရှားပါ</Korean>
+										</Text>
+									</Row_0>
+								</Rows>
+							</ExcludeCrspAccount>
+							<CashFlowId>
+								<Editor>
+									<ClassName>BravoLookupBox</ClassName>
+									<LookupKey>CashFlow</LookupKey>
+								</Editor>
+								<!--zDisplayTextFormat>{0}</zDisplayTextFormat-->
+								<Style>TextAlign:LeftTop;</Style>
+								<Width>86</Width>
+								<Rows>
+									<Row_0>
+										<Text>
+											<Vietnamese>Hoạt động dòng tiền</Vietnamese>
+											<English>Management cash flow category</English>
+											<Japanese>ລາຍການໄຫລຂອງເງິນສົດທີ່ພົ້ນເດັ່ນ</Japanese>
+											<Chinese>ធាតុលំហូរសាច់ប្រាក់លេចធ្លោ</Chinese>
+											<Korean>ထူးချွန်သောငွေသားစီးဆင်းမှုပစ္စည်းများ</Korean>
+										</Text>
+									</Row_0>
+								</Rows>
+							</CashFlowId>
+							<VarKey>
+								<Visible>True</Visible>
+								<Width>80</Width>
+								<Editor>
+									<ClassName>BravoLookupBox</ClassName>
+									<LookupKey>ClassInfo2</LookupKey>
+									<FilterKey>ParentCode = 'DEFBusinessPlan'</FilterKey>
+								</Editor>
+								<Rows>
+									<Row_0>
+										<Text>
+											<Vietnamese>Loại</Vietnamese>
+											<English>Items</English>
+											<Chinese>项目</Chinese>
+											<Japanese>アイテム</Japanese>
+											<Custom>항목입니다.</Custom>
+										</Text>
+										<Style>UserData:VarKey;</Style>
+									</Row_0>
+								</Rows>
+							</VarKey>
+							<VarValue>
+								<Visible>True</Visible>
+								<Width>80</Width>
+								<Editor>
+									<Expr>IIF(VarKey&lt;&gt;'', VarKey, '')</Expr>
+									<Controls>
+										<Default>
+											<ClassName>BravoTextBox</ClassName>
+											<autoCorrectOptions>None</autoCorrectOptions>
+											<TrimStart>False</TrimStart>
+										</Default>
+										<Customer>
+											<ClassName>BravoLookupBox</ClassName>
+											<LookupKey>Customer</LookupKey>
+											<FilterKey>IsGroup = 1</FilterKey>
+											<bindingMembers>
+												<Name>Description</Name>
+											</bindingMembers>
+										</Customer>
+										<ProfitCenter>
+											<ClassName>BravoLookupBox</ClassName>
+											<LookupKey>ProfitCenter</LookupKey>
+											<FilterKey>IsGroup = 1 OR IsGroup = 0</FilterKey>
+											<bindingMembers>
+												<Name>Description</Name>
+											</bindingMembers>
+										</ProfitCenter>
+										<MESGroupCode>
+											<ClassName>BravoLookupBox</ClassName>
+											<LookupKey>ClassInfo</LookupKey>
+											<FilterKey>ParentCode = 'MESGroupCode'</FilterKey>
+											<lookupMode>ChecklistValueMember</lookupMode>
+										</MESGroupCode>
+										<BranchCode>
+											<ClassName>BravoLookupBox</ClassName>
+											<LookupKey>AllBranch</LookupKey>
+										</BranchCode>
+										<RouteCode>
+											<ClassName>BravoLookupBox</ClassName>
+											<LookupKey>DmsRoute</LookupKey>
+											<FilterKey>IsGroup = 1 OR IsGroup = 0</FilterKey>
+											<bindingMembers />
+										</RouteCode>
+										<CostFactorId>
+											<ClassName>BravoLookupBox</ClassName>
+											<LookupKey>CostFactor</LookupKey>
+											<bindingMembers />
+										</CostFactorId>
+										<AssetGroupId>
+											<ClassName>BravoLookupBox</ClassName>
+											<LookupKey>Asset</LookupKey>
+											<FilterKey>IsGroup=1</FilterKey>
+										</AssetGroupId>
+										<Account>
+											<ClassName>BravoLookupBox</ClassName>
+											<LookupKey>ChartOfAccount</LookupKey>
+											<lookupMode>ChecklistValueMember</lookupMode>
+										</Account>
+										<ExpenseCatgId>
+											<ClassName>BravoLookupBox</ClassName>
+											<LookupKey>ExpenseCatg</LookupKey>
+											<lookupMode>ChecklistValueMember</lookupMode>
+											<bindingMembers />
+										</ExpenseCatgId>
+										<ClassCode1>
+											<ClassName>BravoLookupBox</ClassName>
+											<LookupKey>ClassReport</LookupKey>
+											<FilterKey>ParentCode = 'TYPE_MMTB'</FilterKey>
+										</ClassCode1>
+										<ProductLevelId>
+											<ClassName>BravoLookupBox</ClassName>
+											<LookupKey>ProductLevel</LookupKey>
+										</ProductLevelId>
+										<CashFlowId>
+											<ClassName>BravoLookupBox</ClassName>
+											<LookupKey>CashFlow</LookupKey>
+											<lookupMode>ChecklistValueMember</lookupMode>
+										</CashFlowId>
+										<JobId>
+											<ClassName>BravoLookupBox</ClassName>
+											<LookupKey>Job</LookupKey>
+											<lookupMode>ChecklistValueMember</lookupMode>
+										</JobId>
+									</Controls>
+								</Editor>
+								<Rows>
+									<Row_0>
+										<Text>
+											<Vietnamese>Giá trị</Vietnamese>
+											<English>Items</English>
+											<Chinese>项目</Chinese>
+											<Japanese>アイテム</Japanese>
+											<Custom>항목입니다.</Custom>
+										</Text>
+										<Style>UserData:VarValue;</Style>
+									</Row_0>
+								</Rows>
+								<Style>TextAlign:LeftTop;</Style>
+							</VarValue>
+							<ItemLevel>
+								<Editor />
+								<Style>RightAlign:RightTop;</Style>
+								<Format>N0</Format>
+								<Width>32</Width>
+								<Rows>
+									<Row_0>
+										<Text>
+											<Vietnamese>Bậc</Vietnamese>
+											<English>Level</English>
+											<Chinese>ឈាន</Chinese>
+											<Japanese>ບາດກ້າວ</Japanese>
+											<Korean>လှမ်း</Korean>
+										</Text>
+										<Style>UserData:ItemLevel;</Style>
+									</Row_0>
+									<Row_1>
+										<Style>UserData:ItemLevel;</Style>
+									</Row_1>
+								</Rows>
+							</ItemLevel>
+							<ItemNo>
+								<Editor />
+								<Style>TextAlign:LeftTop;</Style>
+								<Width>50</Width>
+								<Rows>
+									<Row_0>
+										<Text>
+											<Vietnamese>Mã số</Vietnamese>
+											<English>Code</English>
+											<Chinese>ច្បាប់រដ្ឋប្បវេនី</Chinese>
+											<Japanese>ລະຫັດ</Japanese>
+											<Korean>လုံးပေါင်းပြဌါန်းသည့်ဉပဒေ</Korean>
+										</Text>
+										<Style>UserData:ItemNo;</Style>
+									</Row_0>
+									<Row_1>
+										<Style>UserData:ItemNo;</Style>
+									</Row_1>
+								</Rows>
+							</ItemNo>
+							<Formula>
+								<Editor />
+								<Style>TextAlign:LeftTop;</Style>
+								<Width>180</Width>
+								<Rows>
+									<Row_0>
+										<Text>
+											<Vietnamese>Công thức</Vietnamese>
+											<English>Formulas</English>
+											<Chinese>វិច្ជាធេវីម្ហូប</Chinese>
+											<Japanese>ສູດທີ່</Japanese>
+											<Korean>ဆေးစာ</Korean>
+										</Text>
+									</Row_0>
+								</Rows>
+							</Formula>
+							<Account>
+								<Editor>
+									<ClassName>BravoLookupBox</ClassName>
+									<lookupMode>ChecklistValueMember</lookupMode>
+									<LookupKey>ChartOfAccount</LookupKey>
+								</Editor>
+								<Style>TextAlign:LeftTop;</Style>
+								<Width>86</Width>
+								<Rows>
+									<Row_0>
+										<Text>
+											<Vietnamese>Tài khoản</Vietnamese>
+											<English>Account</English>
+											<Chinese>កននេយ្យ</Chinese>
+											<Japanese>ບັນຊີ</Japanese>
+											<Korean>ငေှစာရင်း</Korean>
+										</Text>
+									</Row_0>
+								</Rows>
+							</Account>
+							<CrspAccount>
+								<Editor>
+									<ClassName>BravoLookupBox</ClassName>
+									<lookupMode>3</lookupMode>
+									<LookupKey>ChartOfAccount</LookupKey>
+								</Editor>
+								<Style>TextAlign:LeftTop;</Style>
+								<Width>0</Width>
+								<Rows>
+									<Row_0>
+										<Text>
+											<Vietnamese>Tk đối ứng</Vietnamese>
+											<English>Opp-Account</English>
+											<Chinese>គណនីចំរាស់</Chinese>
+											<Japanese>ບັນຊີ reciprocal</Japanese>
+											<Korean>အပြန်အလှန်အကောင့်</Korean>
+										</Text>
+									</Row_0>
+								</Rows>
+							</CrspAccount>
+							<Detail>
+								<Visible>False</Visible>
+								<Editor>
+									<ClassName>BravoLookupBox</ClassName>
+									<LookupKey>Class</LookupKey>
+									<FilterKey>ParentCode='REP_CASHFLOW_Detail'</FilterKey>
+								</Editor>
+								<Style>TextAlign:LeftTop;</Style>
+								<Width>150</Width>
+								<Rows>
+									<Row_0>
+										<Text>
+											<Vietnamese>Chi tiết</Vietnamese>
+											<!--09/12/2024 LienNTP sửa text-->
+											<English>Details</English>
+											<Chinese>សេចក្ដីបិស្ដារ</Chinese>
+											<Japanese>ລາຍລະອຽດ</Japanese>
+											<Korean>အသေးစိတ်</Korean>
+										</Text>
+									</Row_0>
+								</Rows>
+							</Detail>
+							<_FormatStyleKey>
+								<Editor />
+								<Name>_FormatStyleKey</Name>
+								<Style>TextAlign:LeftTop;</Style>
+								<Width>80</Width>
+								<Rows>
+									<Row_0>
+										<Text>
+											<Vietnamese>Định dạng</Vietnamese>
+											<English>Rep format</English>
+											<Chinese>រតង់រតាយ</Chinese>
+											<Japanese>ຮູບແບບ</Japanese>
+											<Korean>ပမာဏ</Korean>
+										</Text>
+									</Row_0>
+								</Rows>
+							</_FormatStyleKey>
+							<Description_English>
+								<Editor>
+									<TrimStart>False</TrimStart>
+								</Editor>
+								<Style>TextAlign:LeftTop;</Style>
+								<Width>0</Width>
+								<Rows>
+									<Row_0>
+										<Text>
+											<Vietnamese>Chỉ tiêu English</Vietnamese>
+											<English>English Items</English>
+											<Chinese>សូចនាករភាសាអង់គ្លេស</Chinese>
+											<Japanese>ຕົວຊີ້ວັດພາສາອັງກິດ</Japanese>
+											<Korean>အင်္ဂလိပ်အညွှန်းကိန်း</Korean>
+										</Text>
+										<Style>UserData:Description_English;</Style>
+									</Row_0>
+								</Rows>
+							</Description_English>
+							<Description_Japanese>
+								<Editor>
+									<TrimStart>False</TrimStart>
+								</Editor>
+								<Style>TextAlign:LeftTop;</Style>
+								<Width>0</Width>
+								<Rows>
+									<Row_0>
+										<Text>
+											<Vietnamese>Chỉ tiêu Nhật</Vietnamese>
+											<English>Japanese Items</English>
+											<Chinese>គោលដៅជប៉ុន</Chinese>
+											<Japanese>ເປົ້າຫມາຍຍີ່ປຸ່ນ</Japanese>
+											<Korean>ဂျပန်ပစ်မှတ်</Korean>
+										</Text>
+										<Style>UserData:Description_Japanese;</Style>
+									</Row_0>
+								</Rows>
+							</Description_Japanese>
+							<Description_Chinese>
+								<Editor>
+									<TrimStart>False</TrimStart>
+								</Editor>
+								<Style>TextAlign:LeftTop;</Style>
+								<Width>0</Width>
+								<Rows>
+									<Row_0>
+										<Text>
+											<Vietnamese>Chỉ tiêu Trung</Vietnamese>
+											<English>Chinese Items</English>
+											<Chinese>គោលដៅមធ្យម</Chinese>
+											<Japanese>ເປົ້າຫມາຍປານກາງ</Japanese>
+											<Korean>အလယ်အလတ်ပစ်မှတ်</Korean>
+										</Text>
+										<Style>UserData:Description_Chinese;</Style>
+									</Row_0>
+								</Rows>
+							</Description_Chinese>
+							<Description_Korean>
+								<Editor>
+									<TrimStart>False</TrimStart>
+								</Editor>
+								<Style>TextAlign:LeftTop;</Style>
+								<Width>0</Width>
+								<Rows>
+									<Row_0>
+										<Text>
+											<Vietnamese>Chỉ tiêu Hàn</Vietnamese>
+											<English>Korea Items</English>
+											<Chinese>លក្ខណៈវិនិច្ឆ័យផ្សារ</Chinese>
+											<Japanese>ເງື່ອນໄຂການເຊື່ອມໂຍງ</Japanese>
+											<Korean>ဂဟေဆော်ခြင်းစံ</Korean>
+										</Text>
+										<Style>UserData:Description_Korean;</Style>
+									</Row_0>
+								</Rows>
+							</Description_Korean>
+							<Loai_Ps>
+								<Editor>
+									<ClassName>BravoLookupBox</ClassName>
+									<LookupKey>Class</LookupKey>
+									<FilterKey>ParentCode = 'REP_CASHFLOW_PERIOD'</FilterKey>
+								</Editor>
+								<Style>TextAlign:LeftTop;</Style>
+								<Width>58</Width>
+								<Rows>
+									<Row_0>
+										<Text>
+											<Vietnamese>Loại Ps</Vietnamese>
+											<English>Type</English>
+											<Chinese>ប្រភេទ PS</Chinese>
+											<Japanese>ປະເພດ PS</Japanese>
+											<Korean>PS အမျိုးအစား</Korean>
+										</Text>
+									</Row_0>
+								</Rows>
+							</Loai_Ps>
+						</Cols>
+						<DataMember>B10KqtCashFlowPlan</DataMember>
+					</Item_1>
+				</Items>
+			</BravoGridContainer>
+		</Controls>
+	</panelEditor>
+	<panelCommand>
+		<Items>
+			<SaveAndClose />
+			<CloseWindow />
+		</Items>
+	</panelCommand>
+	<showCommandButtons>Custom</showCommandButtons>
+	<zCustomConnectionName>$ACC</zCustomConnectionName>
+</root>
