@@ -1,10 +1,10 @@
-SET ANSI_NULLS ON
+﻿SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
 GO
 -- Coder: DucCM    
 -- Manager: ThangNH
-ALTER   PROCEDURE [dbo].[usp_Tth_ToolInstrumentAllocationCalc] 
+CREATE OR ALTER   PROCEDURE [dbo].[usp_Tth_ToolInstrumentAllocationCalc] 
     @_DocDate1          DATE            = N'Jan 01 2001'    
    ,@_DocDate2          DATE            = N'Dec 31 2019'    
    ,@_AssetId           VARCHAR(512)    = N''    
@@ -12,7 +12,7 @@ ALTER   PROCEDURE [dbo].[usp_Tth_ToolInstrumentAllocationCalc]
    ,@_DeptId            VARCHAR(512)    = N''    
    ,@_AssetAccount      VARCHAR(24)     = N''    
    ,@_DeprDebitAccount  VARCHAR(24)     = N''    
-   ,@_DeprCreditAccount VARCHAR(24)     = N''    
+   ,@_DeprCreditAccount VARCHAR(24)     = N''   OUTPUT 
    ,@_nUserId           INT             = 0    
    ,@_LangId            INT             = 1    
    ,@_CurrencyCode0     CHAR(3)         = 'VND'    
@@ -28,11 +28,13 @@ ALTER   PROCEDURE [dbo].[usp_Tth_ToolInstrumentAllocationCalc]
 AS    
 BEGIN    
     SET NOCOUNT ON;    
-    DECLARE @_strExec   NVARCHAR(MAX) = N''    
-           ,@_Declare   NVARCHAR(MAX) = N''    
-           ,@_StrTmp    NVARCHAR(MAX) = N''
-           ,@_nl        CHAR(1)       = CHAR(10)    
-  
+	DECLARE @_strExec           NVARCHAR(MAX) = N''
+		, @_Declare           NVARCHAR(MAX) = N''
+		, @_StrTmp            NVARCHAR(MAX) = N''
+		, @_nl                CHAR(1)       = CHAR(10)
+		, @_BranchCode_Filter VARCHAR(3)    = N''
+		, @_DataCode_Filter   VARCHAR(4)    = N''
+
     IF @_DataCode = ''    
     BEGIN    
         SELECT TOP 1 @_DataCode = DataCode    
@@ -110,45 +112,71 @@ BEGIN
             ,@_BranchCode     = @_BranchCode    
             ,@_BranchReportId = @_BranchReportId  
 			,@_PRINT_Exec = 0	
+ 
+	DECLARE @_DataCodeList TABLE
+	(
+		DataCode VARCHAR(8)
+	  , BranchCode VARCHAR(3)
+	  , Tinh NVARCHAR(1)
+			DEFAULT ''
+	)
+	DECLARE @_BranchCode0 VARCHAR(3) = ''
 
-    DECLARE @_DataCodeList TABLE (DataCode VARCHAR(8), BranchCode VARCHAR(3))  
-  
-    IF ISNULL(@_BranchReportId, 0) <> 0  
-    BEGIN  
-        DROP TABLE IF EXISTS #BranchCode0  
-        SELECT a.BranchCode0  
-        INTO #BranchCode0  
-        FROM dbo.B20BranchReportDetail a  
-            INNER JOIN dbo.B20BranchReport b ON a.BranchReportId = b.Id  
-        WHERE b.Id = @_BranchReportId  
-  
-        DECLARE @_BranchCode0 VARCHAR(3) = ''  
-  
-        WHILE EXISTS (SELECT * FROM #BranchCode0)  
-        BEGIN  
-            SELECT TOP 1 @_BranchCode0 = BranchCode0 FROM #BranchCode0  
-            DELETE #BranchCode0 WHERE BranchCode0 = @_BranchCode0  
-  
-            INSERT INTO @_DataCodeList (DataCode, BranchCode)  
-            SELECT DISTINCT DataCode, BranchCode  
-            FROM dbo.ufn_B00Branch_GetChildTable(@_BranchCode0)  
-            WHERE DataCode NOT IN (SELECT DataCode FROM @_DataCodeList)  
-        END  
-  
-        DROP TABLE IF EXISTS #BranchCode0  
-    END  
-    ELSE  
-    BEGIN  
-        INSERT INTO @_DataCodeList (DataCode, BranchCode)  
-        VALUES (@_DataCode, @_BranchCode)  
-    END  
+
+	IF ISNULL(@_BranchReportId, 0) <> 0
+	BEGIN
+		DROP TABLE IF EXISTS #BranchCode0
+		SELECT a.BranchCode0
+		INTO #BranchCode0
+		FROM dbo.B20BranchReportDetail     AS a
+			INNER JOIN dbo.B20BranchReport AS b
+				ON a.BranchReportId = b.Id
+		WHERE b.Id = @_BranchReportId
+
+		WHILE EXISTS (SELECT * FROM #BranchCode0)
+		BEGIN
+			SELECT TOP 1
+				   @_BranchCode0 = BranchCode0
+			FROM #BranchCode0
+			DELETE #BranchCode0
+			WHERE BranchCode0 = @_BranchCode0
+
+			INSERT INTO @_DataCodeList
+			(
+				BranchCode
+			  , DataCode
+			)
+			SELECT BranchCode
+				 , DataCode
+			FROM dbo.ufn_B00Branch_GetChildTable(@_BranchCode0)
+			WHERE BranchCode NOT IN
+				  (
+					  SELECT BranchCode FROM @_DataCodeList
+				  )
+		END
+
+		DROP TABLE IF EXISTS #BranchCode0
+	END
+	ELSE
+	BEGIN
+		INSERT INTO @_DataCodeList
+		(
+			BranchCode
+		  , DataCode
+		)
+		SELECT BranchCode
+			 , DataCode
+		FROM dbo.ufn_B00Branch_GetChildTable(@_BranchCode)
+	END
+
+
 
     SELECT @_StrTmp = STRING_AGG(CAST(
         N'UPDATE #CtTmp' + @_nl +
         N'SET _AssetCode = b.Code' + @_nl +
         N'FROM #CtTmp a' + @_nl +
         N'JOIN dbo.B2' + DataCode + N'Asset b ON a.AssetId = b.Id' + @_nl +
-        N'WHERE a._AssetCode = '''' OR a._AssetCode IS NULL' AS NVARCHAR(MAX)), N';')
+        N'WHERE a._AssetCode = '''' OR a._AssetCode IS NULL AND b.BranchCode = '''+BranchCode+''' ' AS NVARCHAR(MAX)), N';')
     FROM @_DataCodeList
 
     EXECUTE sys.sp_executesql @_StrTmp
@@ -169,8 +197,8 @@ BEGIN
           ,SUM(CASE WHEN DocGroup <> '2' AND AssetTransType <> 'KHAUHAO' THEN  tb.UsefulMonth  
                     WHEN DocGroup =  '2' AND AssetTransType <> 'KHAUHAO' THEN -1 * tb.UsefulMonth  
                END) AS UsefulMonth    
-          ,MAX(DeptId)                 AS DeptId    
-		  ,CAST('' AS NVARCHAR(156))  AS DeptCode   
+          ,MAX(DeptId)					AS DeptId    
+		  ,CAST('' AS NVARCHAR(156))	AS DeptCode   
           ,SUM(tb.OriginalCost * tb._Head) AS OriginalCost    
 		  --ĐẦU KỲ
           ,SUM(CASE WHEN tb.DocDate < @_DocDate1  
@@ -236,12 +264,7 @@ BEGIN
     FROM #CtTmp tb    
     WHERE tb.AssetTransType <> 'GIAMTAISAN'    
     GROUP BY tb.AssetId   
-
-	--SELECT * FROM #BcTemp 
-	
-	 
-	--SELECT * FROM #CtTmp WHERE CloseDepreciation = 13736114 RETURN 
-
+ 
 /*
 OpenOriginalCost	Giá trị đầu kỳ
 OpenDepreciation	Giá trị phân bổ
@@ -263,7 +286,7 @@ CloseBookValue	Giá trị còn lại
                   ,SUM(CASE WHEN tb.AssetTransType = 'GIAMTAISAN' THEN tb.NetBookValue ELSE 0 END) AS ThisPeriodDepreciation    
             FROM #CtTmp tb    
             GROUP BY tb.AssetId    
-        ) tb ON bct.AssetId = tb.AssetId    
+        ) tb ON bct.AssetId = tb.AssetId  
  
 	DECLARE @_ListCol_Update NVARCHAR(MAX) = 'ExpenseCatgId,DeptId,StageId,ProfitCenterId,DeprDebitAccount,DeprCreditAccount'
  
@@ -284,7 +307,21 @@ CloseBookValue	Giá trị còn lại
 
     SET @_Declare = N'@_DocDate1 DATE'
     EXECUTE sys.sp_executesql @_StrTmp, @_Declare, @_DocDate1
+	    
+		--2026-10-08 TINNT 
+    UPDATE #BcTemp SET CloseOriginalCost = OpenOriginalCost +ThisPeriodIncOriginalCost,
+						CloseDepreciation = OpenDepreciation + ThisPeriodDeOriginalCost + ThisPeriodDepreciation
+ 
+	 
 
+	WHILE EXISTS (SELECT * FROM @_DataCodeList WHERE Tinh ='')
+	BEGIN 
+
+	SELECT TOP (1) @_DataCode_Filter = DataCode, @_BranchCode_Filter = BranchCode FROM @_DataCodeList WHERE Tinh = '' ORDER BY BranchCode ASC 
+
+	UPDATE @_DataCodeList SET Tinh ='x' WHERE BranchCode = @_BranchCode_Filter
+
+	SELECT @_StrTmp = ''
     SELECT @_StrTmp = STRING_AGG(CAST(N'
         UPDATE #BcTemp
         SET  Id           = dm.Id
@@ -296,36 +333,38 @@ CloseBookValue	Giá trị còn lại
             ,Unit         = dm.Unit
             ,DeprCapacity = dm.DeprCapacity
         FROM #BcTemp tb
-        LEFT JOIN dbo.B2' + DataCode + N'Asset dm WITH (NOLOCK)
-            ON tb.AssetId = dm.Id
-        WHERE tb.AssetName IS NULL OR tb.AssetName = ''''
-
+        INNER JOIN dbo.B2' + @_DataCode_Filter + N'Asset dm WITH (NOLOCK)
+            ON tb.AssetId = dm.Id    
+		WHERE  tb.BranchCode = '''+@_BranchCode_Filter+'''
+				AND AssetCode IS NULL
+			
         UPDATE BcTmp
         SET DocNo_C2 = bizdocso.DocNo
         FROM #BcTemp BcTmp
-        INNER JOIN dbo.B3' + DataCode + N'BizDocSO bizdocso WITH (NOLOCK)
+        INNER JOIN dbo.B3' + @_DataCode_Filter + N'BizDocSO bizdocso WITH (NOLOCK)
             ON BcTmp.BizDocId_C2 = bizdocso.BizDocId
+			WHERE  BcTmp.BranchCode = '''+@_BranchCode_Filter+'''
 
         UPDATE #BcTemp
         SET CloseOriginalCost = 0
            ,CloseDepreciation = 0
         FROM #BcTemp tb
-        INNER JOIN dbo.vB3' + DataCode + N'AssetDoc ctts WITH (NOLOCK)
+        INNER JOIN dbo.vB3' + @_DataCode_Filter + N'AssetDoc ctts WITH (NOLOCK)
             ON tb.AssetId           = ctts.AssetId
             AND ctts.AssetType      = 1
             AND ctts.AssetTransType = ''GIAMTAISAN''
             AND ctts.DocDate       <= @_DocDate2
-            AND ctts.IsActive       = 1
-			'
-    AS NVARCHAR(MAX)), N';')
-    FROM (SELECT DISTINCT DataCode FROM @_DataCodeList) t  
+            AND ctts.IsActive       = 1  
+		WHERE  tb.BranchCode = '''+@_BranchCode_Filter+'''
+			'AS NVARCHAR(MAX)), N';')
 
-    EXECUTE sys.sp_executesql @_StrTmp, N'@_DocDate2 DATE', @_DocDate2
+			PRINT @_StrTmp
 
-    --2026-10-08 TINNT 
-    UPDATE #BcTemp set CloseOriginalCost = OpenOriginalCost +ThisPeriodIncOriginalCost,
-    CloseDepreciation = OpenDepreciation + ThisPeriodDeOriginalCost + ThisPeriodDepreciation
+		EXECUTE sys.sp_executesql @_StrTmp, N'@_DocDate2 DATE', @_DocDate2
 
+	END 
+	 
+ 
 	UPDATE #BcTemp    
     SET OpenBookValue  = OpenOriginalCost  - OpenDepreciation    
        ,CloseBookValue = CloseOriginalCost - CloseDepreciation 
@@ -486,7 +525,7 @@ CloseBookValue	Giá trị còn lại
        
     END    
  
-    SELECT * FROM #BcTemp ORDER BY _GroupOrder, AssetCode  ASC    
+    SELECT * FROM #BcTemp ORDER BY _GroupOrder,BranchCode, AssetCode  ASC    
     
 	DROP TABLE IF EXISTS #BcTemp
 					   , #AssetProductActual
@@ -496,9 +535,7 @@ CloseBookValue	Giá trị còn lại
 					   , #AssetFilter;
 END
 GO
+GO
 
 
-
-declare @p15 nvarchar(max)
-
-exec usp_Tth_ToolInstrumentAllocationCalc @_DocDate1='2026-07-01',@_DocDate2='2026-07-31',@_AssetId=default,@_lookupModeAsset=default,@_DeptId=default,@_AssetAccount=default,@_DeprDebitAccount=default,@_DeprCreditAccount='242202',@_nUserId=1213,@_LangId=0,@_CurrencyCode0='VND',@_BranchCode='I01',@_DataCode='2001',@_IsHide=0,@_LAYOUT_XML=@p15 output,@_CheckBC=0,@_DeprMethod=default,@_GroupByExprs='DeprCreditAccount',@_TableTemp=default,@_BranchReportId=default
+ 

@@ -1,8 +1,13 @@
-﻿USE B10THACOIDACC
+﻿/*
+Get dữ liệu 641,642 cho các đơn vị B10
+*/
+
+USE B10THACOIDACC
 GO
 
-CREATE OR ALTER PROC usp_GetAssetSummaryB10
+CREATE OR ALTER PROC usp_Get_QPBH_CPQL
     @_LstBranchCodeB10 NVARCHAR(MAX) = 'I01'
+  , @_Account NVARCHAR(24) = '641'
   , @_DocDate1 DATE = ''
   , @_DocDate2 DATE = ''
   , @_StrTime NVARCHAR(128) = NULL OUTPUT
@@ -10,13 +15,12 @@ AS
 BEGIN
     SET NOCOUNT ON
 
+    IF @_DocDate1 = ''
+       AND @_DocDate2 = ''
+        RETURN
+
     DECLARE @_Time1 DATETIME = GETUTCDATE()
           , @_Time2 DATETIME
-
-    --Biến global khởi tạo => áp dụng toàn phạm vi 
-    --DECLARE @_StartDocDate DATE = DATEFROMPARTS(YEAR(GETDATE()), '01', '01')
-
-
 
     -- => Nhập mã đơn vị  
     DROP TABLE IF EXISTS #T_Dvcs_B10
@@ -28,7 +32,7 @@ BEGIN
               SELECT * FROM STRING_SPLIT(@_LstBranchCodeB10, ',')
           )
 
-
+    DECLARE @_ExpenditureType VARCHAR(24)
 
     WHILE EXISTS (SELECT * FROM #T_Dvcs_B10)
     BEGIN
@@ -45,8 +49,6 @@ BEGIN
         FROM cte
         OPTION (MAXRECURSION 0);
 
-
-
         --chỉ lấy dữ liệu tới tháng trước tháng hiện tại
         DELETE #T_Date
         WHERE DocDate >= EOMONTH(GETDATE())
@@ -62,15 +64,26 @@ BEGIN
         FROM #T_Dvcs_B10
         ORDER BY BranchCode ASC
 
-        DROP TABLE IF EXISTS #temptable
-        CREATE TABLE #temptable
+        DROP TABLE IF EXISTS #T_Get64
+        CREATE TABLE #T_Get64
         (
             Id INT
-          , DataSourceVer NVARCHAR(24)
           , CreatedAt SMALLDATETIME
+          , DataSourceVer VARCHAR(24)
           , DocDate1 DATE
           , DocDate2 DATE
+          , IsActive INT
+                DEFAULT 1
+          , BranchCode VARCHAR(3)
+          , ExpenditureType VARCHAR(24)
         )
+
+        SELECT TOP 1
+               @_ExpenditureType = Code
+        FROM B10THACOID_Data.dbo.b20class
+        WHERE ParentCode = 'ExpenditureType'
+              AND LEFT(ValueCol, 3) = @_Account
+
 
         WHILE EXISTS (SELECT * FROM #T_Date)
         BEGIN
@@ -84,52 +97,63 @@ BEGIN
             SELECT @_DocDate2_Filter = EOMONTH(@_DocDate_Filter)
             SELECT @_DocDate1_Filter = DATEFROMPARTS(YEAR(@_DocDate2_Filter), MONTH(@_DocDate2_Filter), '01')
 
-
             SET DATEFORMAT DMY
-            EXEC usp_Tth_AssetSummaryTable @_DocDate1 = @_DocDate1_Filter
-                                         , @_DocDate2 = @_DocDate2_Filter
-                                         , @_ShownIncreaseDeprColumn = 0
-                                         , @_GroupByExprs = ''
-                                         , @_nUserId = 1213
-                                         , @_LangId = 0
-                                         , @_BranchCode = @_BranchCode_Filter
-                                         , @_CurrencyCode0 = 'VND'
-                                         , @_ProductionCapacityVisible = 1
-                                         , @_CtTmp = '#temptable'
+            EXEC usp_Kct_TransactionListBySubAccount @_DocDate1 = @_DocDate1_Filter
+                                                   , @_DocDate2 = @_DocDate2_Filter
+                                                   , @_Account = @_Account
+                                                   , @_ExcludeCrspAccount = '911'
+                                                   , @_nUserId = 1213
+                                                   , @_LangId = 0
+                                                   , @_BranchCode = @_BranchCode_Filter
+                                                   --  , @_StrTime = '00:00:00'
+                                                   , @_CtTmp = '#T_Get64'
 
             -----------------
-            UPDATE #temptable
+            EXEC usp_sys_CreateTable @_Table = '#T_Get64'
+                                   , @_BaseTable = 'B40GeneralLedgerConsol'
+
+            UPDATE #T_Get64
             SET CreatedAt = GETUTCDATE()
               , DataSourceVer = 'B10'
               , DocDate1 = @_DocDate1_Filter
               , DocDate2 = @_DocDate2_Filter
+              , IsActive = 1
+              , BranchCode = @_BranchCode_Filter
+              , ExpenditureType = @_ExpenditureType
 
-            EXEC usp_sys_CreateTable @_Table = '#temptable'
-                                   , @_BaseTable = 'B40AssetSummary'
-
-
-            DELETE B40AssetSummary
+            DELETE B40GeneralLedgerConsol
             WHERE BranchCode = @_BranchCode_Filter
+                  AND LEFT(Account, 3) = @_Account
                   AND
                   (
                       DocDate1 = @_DocDate1_Filter
                       AND DocDate2 = @_DocDate2_Filter
                   )
+            -----
+            EXEC dbo.usp_sys_Append @_TableSource = '#T_Get64'                    -- nvarchar(128)
+                                  , @_TableDestination = 'B40GeneralLedgerConsol' -- nvarchar(128)
 
-            EXEC dbo.usp_sys_Append @_TableSource = '#temptable'           -- nvarchar(128)
-                                  , @_TableDestination = 'B40AssetSummary' -- nvarchar(128)
-            TRUNCATE TABLE #temptable
+            TRUNCATE TABLE #T_Get64
 
             DELETE #T_Date
             WHERE DocDate = @_DocDate_Filter
 
+            SELECT *
+            FROM B40GeneralLedgerConsol
+            WHERE BranchCode = @_BranchCode_Filter
+                  AND LEFT(Account, 3) = @_Account
+                  AND
+                  (
+                      DocDate1 = @_DocDate1_Filter
+                      AND DocDate2 = @_DocDate2_Filter
+                  )
         END
 
         DELETE #T_Dvcs_B10
         WHERE BranchCode = @_BranchCode_Filter
     END
 
-    DROP TABLE #temptable
+    DROP TABLE #T_Get64
              , #T_Date
              , #T_Dvcs_B10
 
@@ -140,7 +164,10 @@ END
 
 GO
 SET DATEFORMAT DMY
-EXEC usp_GetAssetSummaryB7B10 @_DocDate1 = '01/01/2026 00:00:00.000'
-                            , @_DocDate2 = '31/07/2026 00:00:00.000'
-                            --, @_LstBranchCodeB10 = 'I01'
-                            , @_LstBranchCodeB7 = 'A46'
+EXEC usp_Get_QPBH_CPQL @_DocDate1 = '01/01/2026 00:00:00.000'
+                     , @_DocDate2 = '31/08/2026 00:00:00.000'
+                     , @_LstBranchCodeB10 = 'I01,I02,I04,I08,I09,I10,I11,I12,I14,I15,I17,I19,I20,I21,I22,I23,I24,I25,I26,I27,I29,I30'
+                     --, @_LstBranchCodeB10 = 'I09'
+                     , @_Account = '642'
+--, @_LstBranchCodeB7 = 'A46'
+
