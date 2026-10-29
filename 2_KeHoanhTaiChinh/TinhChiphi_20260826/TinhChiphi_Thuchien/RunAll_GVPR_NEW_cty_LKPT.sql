@@ -151,6 +151,7 @@ WHERE BranchCode IN
       (
           SELECT *
           FROM STRING_SPLIT('I21,I22,I23', ',')
+          --FROM STRING_SPLIT('I21,I22,I23', ',')
           --FROM STRING_SPLIT('I04,I08,I21,I22,I23', ',')
       )
 
